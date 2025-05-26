@@ -31,6 +31,7 @@ poetry - for managing packages
    NEO4J_URI=bolt://localhost:7687       # Default connection URI
    NEO4J_USER=neo4j                      # Default user (change if needed)
    NEO4J_PASSWORD=your_password          # Replace with your actual password
+   ```
 
 ## 📁 Code Structure
 ```commandline
