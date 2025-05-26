@@ -77,7 +77,7 @@ Using an IDE (PyCharm):
 - Press Shift+F10 to run it (or use the IDE's Run action)
 - Or run directly from terminal:
 ```commandline
-poetry run python app/main.py
+poetry run python -m app.main
 ```
 
 ### ✅ Testing
