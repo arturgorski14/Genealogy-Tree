@@ -49,6 +49,7 @@ project_root/
 │
 ├── .env
 ├── .gitignore
+├── .pre-commit-config.yaml
 ├── poetry.lock
 ├── pyproject.toml
 └── README.md
