@@ -2,7 +2,7 @@ import pytest
 from neo4j import Driver, Record, Session
 
 from app.commands import add_person, get_person, remove_person
-from app.db import get_test_driver
+from app.database import get_test_driver
 
 PERSON_NAME = "TestAddUser"
 
