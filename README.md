@@ -73,13 +73,16 @@ poetry install --no-root
 ```
 
 ### ▶️ Run the Application
-Using an IDE (PyCharm):
-- Select the file: app/main.py
-- Press Shift+F10 to run it (or use the IDE's Run action)
-- Or run directly from terminal:
+Start backend server (from root folder)
 ```commandline
 poetry run uvicorn app.main:app --reload
 ```
+Start frontend server (from root folder)
+```commandline
+cd frontend
+npm run dev
+```
+
 
 ### ✅ Testing
 #### 🛠️ Setup Test Environment
