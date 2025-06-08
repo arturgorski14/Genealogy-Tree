@@ -2,5 +2,5 @@ from pydantic import BaseModel
 
 
 class Person(BaseModel):
-    id: str | None = None  # optional for POST
+    uid: str | None = None  # should be None in POST
     name: str
