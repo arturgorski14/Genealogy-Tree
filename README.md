@@ -74,13 +74,16 @@ poetry install --no-root
 ```
 
 ### ▶️ Run the Application
-Using an IDE (PyCharm):
-- Select the file: app/main.py
-- Press Shift+F10 to run it (or use the IDE's Run action)
-- Or run directly from terminal:
+Start backend server (from root folder)
 ```commandline
-poetry run python -m app.main
+poetry run uvicorn app.main:app --reload
 ```
+Start frontend server (from root folder)
+```commandline
+cd frontend
+npm run dev
+```
+
 
 ### ✅ Testing
 #### 🛠️ Setup Test Environment
@@ -94,4 +97,19 @@ NEO4J_FOR_TESTS_PASSWORD=your_password          # Test password
 #### 🧪 Run Tests
 ```commandline
 poetry run pytest
+```
+
+### Common Errors
+#### 1.
+Sometimes fastapi server doesn't respond properly especially after multiple restarts. Check whether the port is free (ex. checking port 8000):
+```commandline
+netstat -ano | findstr :8000
+```
+Try to kill conflicting PID (ex. 2916):
+```commandline
+taskkill /PID 2916 /F
+```
+If that doesn't work use different port (ex. 8010):
+```commandline
+poetry run uvicorn app.main:app --reload --port 8010
 ```
