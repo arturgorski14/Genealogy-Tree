@@ -1,0 +1,3 @@
+- Integrate Creating relationships with frontend.
+- Allow for deleting the person (and it's relationships).
+- Write edge case test scenarios.
