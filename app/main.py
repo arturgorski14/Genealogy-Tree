@@ -4,7 +4,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import get_driver
-from app.models import Person
+from app.models import ParentRelationshipInput, Person
 
 app = FastAPI()
 driver = get_driver()
@@ -42,11 +42,47 @@ def get_person(person_id: str):
 @app.post("/people")
 def create_person(person: Person):
     print("Creating person")
-    person.uid = str(uuid.uuid4())
     with driver.session() as session:
         session.run(
             "CREATE (p:Person {uid: $uid, name: $name})",
-            uid=person.uid,
+            uid=uuid.uuid4(),
             name=person.name,
         )
     return person
+
+
+@app.post("/relationships/parent")
+def create_parent_relationship(rel: ParentRelationshipInput):
+    with driver.session() as session:
+        session.run(
+            """
+            MATCH (child:Person {uid: $child_id}), (parent:Person {uid: $parent_id})
+            MERGE (parent)-[r:PARENT]->(child)
+            SET r.type = $type
+            """,
+            parent_id=str(rel.parent_id),
+            child_id=str(rel.child_id),
+            type=rel.type.value,
+        )
+    return {"message": "Parent relationship created"}
+
+
+"""
+Query to get person parents
+
+MATCH (parent:Person)-[r:PARENT]->(child:Person {uid: $child_id})
+RETURN parent, r.type AS relationship_type
+
+Query to get person children
+
+MATCH (parent:Person {uid: $parent_id})-[r:PARENT]->(child:Person)
+RETURN child, r.type AS relationship_type
+
+Query to get all people and all types of relationships in table form
+
+MATCH (p1:Person)-[r]->(p2:Person)
+RETURN p1.uid AS from_uid, p1.name AS from_name,
+       type(r) AS relationship,
+       r.type AS relationship_type,
+       p2.uid AS to_uid, p2.name AS to_name
+"""
