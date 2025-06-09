@@ -31,7 +31,7 @@ def get_person(person_id: str):
     print("Getting person")
     with driver.session() as session:
         result = session.run(
-            "MATCH (p:Person {id: $id}) RETURN p", id=person_id
+            "MATCH (p:Person {uid: $uid}) RETURN p", uid=person_id
         )  # noqa E501
         record = result.single()
         if record:
@@ -46,7 +46,7 @@ def create_person(person: Person):
     with driver.session() as session:
         session.run(
             "CREATE (p:Person {uid: $uid, name: $name})",
-            id=person.uid,
+            uid=person.uid,
             name=person.name,
         )
     return person

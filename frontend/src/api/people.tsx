@@ -1,6 +1,20 @@
 import axios from 'axios';
 
+const BASE_URL = 'http://localhost:8000';
+
 export async function getAllPeople() {
-  const response = await axios.get('http://localhost:8010/people'); // sufficient for quick test
-  return response.data; // axios unwraps JSON automatically
+  const response = await axios.get(`${BASE_URL}/people`);
+  return response.data;
+}
+
+export async function getPerson(id: string) {
+  const response = await axios.get(`${BASE_URL}/people/${id}`);
+  return response.data;
+}
+
+export async function createPerson(name: string) {
+  const response = await axios.post(`${BASE_URL}/people`, {
+    name,
+  });
+  return response.data;
 }

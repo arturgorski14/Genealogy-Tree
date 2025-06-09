@@ -1,18 +1,19 @@
-import { useEffect, useState } from 'react'
-import { getAllPeople } from './api/people';
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from 'react';
+import { getAllPeople, createPerson } from './api/people';
 
 function App() {
-  const [count, setCount] = useState(0)
   const [people, setPeople] = useState([]);
+  const [newName, setNewName] = useState('');
 
   useEffect(() => {
-    getAllPeople()
-      .then(setPeople)
-      .catch((err) => console.error('Failed to load people:', err));
+    getAllPeople().then(setPeople).catch(console.error);
   }, []);
+
+  const handleCreate = async () => {
+    const newPerson = await createPerson(newName);
+    setPeople([...people, newPerson]);
+    setNewName('');
+  };
 
   return (
     <div>
@@ -22,8 +23,15 @@ function App() {
           <li key={p.uid}>{p.name}</li>
         ))}
       </ul>
+      <input
+        type="text"
+        value={newName}
+        onChange={(e) => setNewName(e.target.value)}
+        placeholder="New name"
+      />
+      <button onClick={handleCreate}>Add Person</button>
     </div>
   );
 }
 
-export default App
+export default App;
