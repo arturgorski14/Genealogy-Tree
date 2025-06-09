@@ -18,7 +18,3 @@ class ParentRelationshipInput(BaseModel):
     parent_id: UUID
     child_id: UUID
     type: ParentType
-
-
-class XD(BaseModel):
-    name: str
