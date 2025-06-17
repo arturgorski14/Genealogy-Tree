@@ -15,92 +15,164 @@ def client():
 
 
 def test_get_all_people_empty(client):
-    mock_driver, _ = mock_neo4j_driver_with_session(mock_records=[])
+    # arrange
+    mock_driver, mock_session = mock_neo4j_driver_with_session(mock_records=[])
     app.dependency_overrides[get_driver] = lambda: mock_driver
 
+    # act
     response = client.get("/people")
+
+    # assert
     assert response.status_code == 200
     assert response.json() == []
 
+    mock_session.run.assert_called_once_with("MATCH (p:Person) RETURN p")
+
 
 def test_get_all_people(client):
-
+    # arrange
     mock_records = [
         {"p": {"uid": "123", "name": "Alice"}},
         {"p": {"uid": "456", "name": "Bob"}},
     ]
-    mock_driver, _ = mock_neo4j_driver_with_session(mock_records=mock_records)
+    mock_driver, mock_session = mock_neo4j_driver_with_session(
+        mock_records=mock_records
+    )
     app.dependency_overrides[get_driver] = lambda: mock_driver
 
+    # act
     response = client.get("/people")
+
+    # assert
     assert response.status_code == 200
     assert response.json() == [
         {"uid": "123", "name": "Alice"},
         {"uid": "456", "name": "Bob"},
     ]
 
+    mock_session.run.assert_called_once_with("MATCH (p:Person) RETURN p")
+
 
 def test_create_person(client):
+    # arrange
+    person_name = "Alice"
     mock_driver, mock_session = mock_neo4j_driver_with_session()
     app.dependency_overrides[get_driver] = lambda: mock_driver
 
-    response = client.post("/people", json={"name": "Alice"})
+    # act
+    response = client.post("/people", json={"name": person_name})
+
+    # assert
     assert response.status_code == 200
 
     data = response.json()
-    assert data["name"] == "Alice"
+    assert data["name"] == person_name
     assert isinstance(data["uid"], str)
     assert str(uuid.UUID(data["uid"])) == data["uid"]
 
     mock_session.run.assert_called_once_with(
-        "CREATE (p:Person {uid: $uid, name: $name})", uid=ANY, name="Alice"
+        "CREATE (p:Person {uid: $uid, name: $name})", uid=ANY, name=person_name
     )
 
 
 def test_get_person_found(client):
+    # arrange
     person = {"uid": "123", "name": "Alice"}
-    mock_driver, _ = mock_neo4j_driver_with_session(single_record={"p": person})
+    mock_driver, mock_session = mock_neo4j_driver_with_session(
+        single_record={"p": person}
+    )
     app.dependency_overrides[get_driver] = lambda: mock_driver
 
-    response = client.get("/people/123")
+    # act
+    response = client.get(f"/people/{person['uid']}")
+
+    # assert
     assert response.status_code == 200
     assert response.json() == person
 
+    mock_session.run.assert_called_once_with(
+        "MATCH (p:Person {uid: $uid}) RETURN p", uid=person["uid"]
+    )
+
 
 def test_get_person_not_found(client):
-    mock_driver, _ = mock_neo4j_driver_with_session(single_record=None)
+    # arrange
+    person = {"uid": "123", "name": "does-not-exist"}
+    mock_driver, mock_session = mock_neo4j_driver_with_session(single_record=None)
     app.dependency_overrides[get_driver] = lambda: mock_driver
 
-    response = client.get("/people/does-not-exist")
+    # act
+    response = client.get(f"/people/{person['uid']}")
+
+    # assert
     assert response.status_code == 404
     assert response.json()["detail"] == "Person not found"
+
+    mock_session.run.assert_called_once_with(
+        "MATCH (p:Person {uid: $uid}) RETURN p", uid=person["uid"]
+    )
 
 
 def test_delete_person_success(client):
-    mock_driver, _ = mock_neo4j_driver_with_session(single_record={"deleted_count": 1})
+    # arrange
+    person = {"uid": "123", "name": "does-not-exist"}
+    mock_driver, mock_session = mock_neo4j_driver_with_session(
+        single_record={"deleted_count": 1}
+    )
     app.dependency_overrides[get_driver] = lambda: mock_driver
 
-    response = client.delete("/people/123")
+    # act
+    response = client.delete(f"/people/{person['uid']}")
+
+    # assert
     assert response.status_code == 200
-    assert "Person 123 deleted successfully" in response.json()["message"]
+    assert f"Person {person['uid']} deleted successfully" in response.json()["message"]
+
+    mock_session.run.assert_called_once_with(
+        "MATCH (p:Person {uid: $uid}) DELETE p RETURN COUNT(p) AS deleted_count",
+        uid=person["uid"],
+    )
 
 
 def test_delete_person_not_found(client):
-    mock_driver, _ = mock_neo4j_driver_with_session(single_record={"deleted_count": 0})
+    # arrange
+    person = {"uid": "123", "name": "does-not-exist"}
+    mock_driver, mock_session = mock_neo4j_driver_with_session(
+        single_record={"deleted_count": 0}
+    )
     app.dependency_overrides[get_driver] = lambda: mock_driver
 
-    response = client.delete("/people/does-not-exist")
+    # act
+    response = client.delete(f"/people/{person['uid']}")
+
+    # assert
     assert response.status_code == 404
     assert response.json()["detail"] == "Person not found"
 
+    mock_session.run.assert_called_once_with(
+        "MATCH (p:Person {uid: $uid}) DELETE p RETURN COUNT(p) AS deleted_count",
+        uid=person["uid"],
+    )
+
 
 def test_delete_person_multiple_deleted(client):
-    mock_driver, _ = mock_neo4j_driver_with_session(single_record={"deleted_count": 2})
+    # arrange
+    mock_driver, mock_session = mock_neo4j_driver_with_session(
+        single_record={"deleted_count": 2}
+    )
     app.dependency_overrides[get_driver] = lambda: mock_driver
 
+    # act
     response = client.delete("/people/duplicate")
+
+    # assert
     assert response.status_code == 500
     assert "Multiple people deleted" in response.json()["detail"]
+
+    mock_session.run.assert_called_once_with(
+        "MATCH (p:Person {uid: $uid}) DELETE p RETURN COUNT(p) AS deleted_count",
+        uid="duplicate",
+    )
 
 
 def mock_neo4j_driver_with_session(mock_records=None, single_record=None):
