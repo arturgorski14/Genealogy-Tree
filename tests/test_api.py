@@ -15,24 +15,28 @@ def client():
 
 
 def test_create_person(client):
-    # arrange
-    mock_session = MagicMock()
-    mock_driver = MagicMock()
-    mock_driver.session.return_value.__enter__.return_value = mock_session
+    mock_driver, mock_session = mock_neo4j_driver_with_session()
     app.dependency_overrides[get_driver] = lambda: mock_driver
 
-    # act
     response = client.post("/people", json={"name": "Alice"})
+    assert response.status_code == 200
 
-    # assert
+    data = response.json()
+    assert data["name"] == "Alice"
+    assert isinstance(data["uid"], str)
+    assert str(uuid.UUID(data["uid"])) == data["uid"]
+
     mock_session.run.assert_called_once_with(
         "CREATE (p:Person {uid: $uid, name: $name})", uid=ANY, name="Alice"
     )
 
-    data = response.json()
-    assert response.status_code == 200
-    assert data["name"] == "Alice"
-    uid = data["uid"]
-    assert isinstance(uid, str)
-    uuid_obj = uuid.UUID(uid)
-    assert str(uuid_obj) == uid
+
+def mock_neo4j_driver_with_session(mock_records=None, single_record=None):
+    mock_session = MagicMock()
+    mock_session.run.return_value = MagicMock(
+        __iter__=lambda self: iter(mock_records or []),
+        single=MagicMock(return_value=single_record),
+    )
+    mock_driver = MagicMock()
+    mock_driver.session.return_value.__enter__.return_value = mock_session
+    return mock_driver, mock_session
