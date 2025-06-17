@@ -76,6 +76,33 @@ def test_get_person_not_found(client):
     assert response.json()["detail"] == "Person not found"
 
 
+def test_delete_person_success(client):
+    mock_driver, _ = mock_neo4j_driver_with_session(single_record={"deleted_count": 1})
+    app.dependency_overrides[get_driver] = lambda: mock_driver
+
+    response = client.delete("/people/123")
+    assert response.status_code == 200
+    assert "Person 123 deleted successfully" in response.json()["message"]
+
+
+def test_delete_person_not_found(client):
+    mock_driver, _ = mock_neo4j_driver_with_session(single_record={"deleted_count": 0})
+    app.dependency_overrides[get_driver] = lambda: mock_driver
+
+    response = client.delete("/people/does-not-exist")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Person not found"
+
+
+def test_delete_person_multiple_deleted(client):
+    mock_driver, _ = mock_neo4j_driver_with_session(single_record={"deleted_count": 2})
+    app.dependency_overrides[get_driver] = lambda: mock_driver
+
+    response = client.delete("/people/duplicate")
+    assert response.status_code == 500
+    assert "Multiple people deleted" in response.json()["detail"]
+
+
 def mock_neo4j_driver_with_session(mock_records=None, single_record=None):
     mock_session = MagicMock()
     mock_session.run.return_value = MagicMock(
