@@ -74,6 +74,7 @@ poetry install --no-root
 ```
 
 ### ▶️ Run the Application
+Open Neo4j Desktop and start the database
 Start backend server (from root folder)
 ```commandline
 poetry run uvicorn app.main:app --reload
