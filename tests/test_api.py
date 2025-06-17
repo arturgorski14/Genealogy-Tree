@@ -31,6 +31,25 @@ def test_create_person(client):
     )
 
 
+def test_get_person_found(client):
+    person = {"uid": "123", "name": "Alice"}
+    mock_driver, _ = mock_neo4j_driver_with_session(single_record={"p": person})
+    app.dependency_overrides[get_driver] = lambda: mock_driver
+
+    response = client.get("/people/123")
+    assert response.status_code == 200
+    assert response.json() == person
+
+
+def test_get_person_not_found(client):
+    mock_driver, _ = mock_neo4j_driver_with_session(single_record=None)
+    app.dependency_overrides[get_driver] = lambda: mock_driver
+
+    response = client.get("/people/does-not-exist")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Person not found"
+
+
 def mock_neo4j_driver_with_session(mock_records=None, single_record=None):
     mock_session = MagicMock()
     mock_session.run.return_value = MagicMock(
