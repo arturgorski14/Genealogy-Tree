@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import get_driver
@@ -33,18 +33,38 @@ def get_person(person_id: str, driver=Depends(get_driver)):
         record = result.single()
         if record:
             return {"uid": record["p"]["uid"], "name": record["p"]["name"]}
-        raise HTTPException(status_code=404, detail="Person not found")
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Person not found")
 
 
 @app.post("/people")
 def create_person(person: Person, driver=Depends(get_driver)):
     with driver.session() as session:
+        uid = str(uuid.uuid4())
         session.run(
             "CREATE (p:Person {uid: $uid, name: $name})",
-            uid=uuid.uuid4(),
+            uid=uid,
             name=person.name,
         )
-    return person
+    return {"uid": uid, "name": person.name}
+
+
+@app.delete("/people/{person_id}")
+def delete_person(person_id: str, driver=Depends(get_driver)):
+    with driver.session() as session:
+        result = session.run(
+            "MATCH (p:Person {uid: $uid}) DELETE p RETURN COUNT(p) AS deleted_count",
+            uid=person_id,
+        )
+        deleted_count = result.single().get("deleted_count")
+        if deleted_count == 0:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Person not found")
+
+        if deleted_count > 1:  # TODO: make this case redundant, by adding a constraint
+            raise HTTPException(
+                status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Multiple people deleted — data integrity issue",
+            )
+    return {"message": f"Person {person_id} deleted successfully"}
 
 
 @app.post("/relationships/parent")
