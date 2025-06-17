@@ -14,6 +14,32 @@ def client():
     app.dependency_overrides = {}
 
 
+def test_get_all_people_empty(client):
+    mock_driver, _ = mock_neo4j_driver_with_session(mock_records=[])
+    app.dependency_overrides[get_driver] = lambda: mock_driver
+
+    response = client.get("/people")
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+def test_get_all_people(client):
+
+    mock_records = [
+        {"p": {"uid": "123", "name": "Alice"}},
+        {"p": {"uid": "456", "name": "Bob"}},
+    ]
+    mock_driver, _ = mock_neo4j_driver_with_session(mock_records=mock_records)
+    app.dependency_overrides[get_driver] = lambda: mock_driver
+
+    response = client.get("/people")
+    assert response.status_code == 200
+    assert response.json() == [
+        {"uid": "123", "name": "Alice"},
+        {"uid": "456", "name": "Bob"},
+    ]
+
+
 def test_create_person(client):
     mock_driver, mock_session = mock_neo4j_driver_with_session()
     app.dependency_overrides[get_driver] = lambda: mock_driver
