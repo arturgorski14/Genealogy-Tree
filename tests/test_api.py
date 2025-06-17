@@ -11,6 +11,11 @@ from app.main import app, get_driver
 def client():
     with TestClient(app) as c:
         yield c
+
+
+@pytest.fixture(autouse=True)
+def reset_dependency_overrides():
+    yield
     app.dependency_overrides = {}
 
 
