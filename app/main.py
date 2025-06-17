@@ -1,13 +1,12 @@
 import uuid
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import get_driver
 from app.models import ParentRelationshipInput, Person
 
 app = FastAPI()
-driver = get_driver()
 
 app.add_middleware(
     CORSMiddleware,
@@ -19,29 +18,26 @@ app.add_middleware(
 
 
 @app.get("/people")
-def get_all_people():
-    print("Getting people")
+def get_all_people(driver=Depends(get_driver)):
     with driver.session() as session:
         result = session.run("MATCH (p:Person) RETURN p")
-        return [record["p"] for record in result]
+        return [{"uid": r["p"]["uid"], "name": r["p"]["name"]} for r in result]
 
 
 @app.get("/people/{person_id}")
-def get_person(person_id: str):
-    print("Getting person")
+def get_person(person_id: str, driver=Depends(get_driver)):
     with driver.session() as session:
         result = session.run(
             "MATCH (p:Person {uid: $uid}) RETURN p", uid=person_id
         )  # noqa E501
         record = result.single()
         if record:
-            return record["p"]
+            return {"uid": record["p"]["uid"], "name": record["p"]["name"]}
         raise HTTPException(status_code=404, detail="Person not found")
 
 
 @app.post("/people")
-def create_person(person: Person):
-    print("Creating person")
+def create_person(person: Person, driver=Depends(get_driver)):
     with driver.session() as session:
         session.run(
             "CREATE (p:Person {uid: $uid, name: $name})",
@@ -52,7 +48,9 @@ def create_person(person: Person):
 
 
 @app.post("/relationships/parent")
-def create_parent_relationship(rel: ParentRelationshipInput):
+def create_parent_relationship(
+    rel: ParentRelationshipInput, driver=Depends(get_driver)
+):
     with driver.session() as session:
         session.run(
             """
