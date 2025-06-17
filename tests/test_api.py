@@ -129,6 +129,16 @@ def test_get_person_not_found(client):
     )
 
 
+@pytest.mark.xfail(reason="Currently no UUID validation on person_id path param")
+def test_get_person_invalid_uuid(client):
+    # act
+    response = client.get("/people/not-a-valid-uuid")
+
+    # assert
+    # 422 corresponds to Unprocessable Entity in pydantic validation
+    assert response.status_code == 422
+
+
 def test_delete_person_success(client):
     # arrange
     person = {"uid": "123", "name": "does-not-exist"}
@@ -189,3 +199,13 @@ def test_delete_person_multiple_deleted(client):
         "MATCH (p:Person {uid: $uid}) DELETE p RETURN COUNT(p) AS deleted_count",
         uid="duplicate",
     )
+
+
+@pytest.mark.xfail(reason="Currently no UUID validation on person_id path param")
+def test_delete_person_invalid_uuid(client):
+    # act
+    response = client.delete("/people/not-a-valid-uuid")
+
+    # assert
+    # 422 corresponds to Unprocessable Entity in pydantic validation
+    assert response.status_code == 422
