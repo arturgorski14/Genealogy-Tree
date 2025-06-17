@@ -2,6 +2,7 @@ import uuid
 from unittest.mock import ANY, MagicMock
 
 import pytest
+from fastapi import status
 from fastapi.testclient import TestClient
 
 from app.main import app, get_driver
@@ -44,7 +45,7 @@ def test_get_all_people_empty(client):
     response = client.get("/people")
 
     # assert
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     assert response.json() == []
 
     mock_session.run.assert_called_once_with("MATCH (p:Person) RETURN p")
@@ -65,7 +66,7 @@ def test_get_all_people(client):
     response = client.get("/people")
 
     # assert
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     assert response.json() == [
         {"uid": "123", "name": "Alice"},
         {"uid": "456", "name": "Bob"},
@@ -84,7 +85,7 @@ def test_create_person(client):
     response = client.post("/people", json={"name": person_name})
 
     # assert
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
 
     data = response.json()
     assert data["name"] == person_name
@@ -108,7 +109,7 @@ def test_get_person_found(client):
     response = client.get(f"/people/{person['uid']}")
 
     # assert
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     assert response.json() == person
 
     mock_session.run.assert_called_once_with(
@@ -126,7 +127,7 @@ def test_get_person_not_found(client):
     response = client.get(f"/people/{person['uid']}")
 
     # assert
-    assert response.status_code == 404
+    assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json()["detail"] == "Person not found"
 
     mock_session.run.assert_called_once_with(
@@ -140,8 +141,7 @@ def test_get_person_invalid_uuid(client):
     response = client.get("/people/not-a-valid-uuid")
 
     # assert
-    # 422 corresponds to Unprocessable Entity in pydantic validation
-    assert response.status_code == 422
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
 def test_delete_person_success(client):
@@ -156,7 +156,7 @@ def test_delete_person_success(client):
     response = client.delete(f"/people/{person['uid']}")
 
     # assert
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     assert f"Person {person['uid']} deleted successfully" in response.json()["message"]
 
     mock_session.run.assert_called_once_with(
@@ -177,7 +177,7 @@ def test_delete_person_not_found(client):
     response = client.delete(f"/people/{person['uid']}")
 
     # assert
-    assert response.status_code == 404
+    assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json()["detail"] == "Person not found"
 
     mock_session.run.assert_called_once_with(
@@ -197,7 +197,7 @@ def test_delete_person_multiple_deleted(client):
     response = client.delete("/people/duplicate")
 
     # assert
-    assert response.status_code == 500
+    assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
     assert "Multiple people deleted" in response.json()["detail"]
 
     mock_session.run.assert_called_once_with(
@@ -212,5 +212,4 @@ def test_delete_person_invalid_uuid(client):
     response = client.delete("/people/not-a-valid-uuid")
 
     # assert
-    # 422 corresponds to Unprocessable Entity in pydantic validation
-    assert response.status_code == 422
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
