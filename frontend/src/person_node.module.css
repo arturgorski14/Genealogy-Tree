@@ -1,0 +1,59 @@
+.tree {
+  padding-top: 20px;
+  position: relative;
+  padding-left: 0;
+  list-style: none;
+}
+
+.tree::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  border-left: 2px solid #ccc;
+  height: 20px;
+}
+
+.treeItem {
+  display: inline-block;
+  text-align: center;
+  position: relative;
+  margin: 0 20px;
+}
+
+.treeItem::before,
+.treeItem::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  border-top: 2px solid #ccc;
+  width: 50%;
+  height: 20px;
+}
+
+.treeItem::before {
+  left: -50%;
+  border-right: 2px solid #ccc;
+}
+
+.treeItem::after {
+  right: -50%;
+  border-left: 2px solid #ccc;
+}
+
+.treeItemOnlyChild::before,
+.treeItemOnlyChild::after {
+  content: none;
+}
+
+.node {
+  display: inline-block;
+  border: 2px solid #3498db;
+  border-radius: 8px;
+  padding: 6px 12px;
+  background: #ecf0f1;
+  color: #2c3e50;
+  font-weight: bold;
+  position: relative;
+  z-index: 1;
+}

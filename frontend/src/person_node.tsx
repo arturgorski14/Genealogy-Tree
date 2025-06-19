@@ -1,3 +1,5 @@
+import styles from './person_node.module.css';
+
 export type Person = {
   uid: string;
   name: string;
@@ -28,13 +30,16 @@ export function buildFamilyTree(people: Person[], relationships: any[]): Person[
   return roots.map((r) => peopleMap[r.uid]);
 }
 
+export function PersonNode({ person }) {
+  const isOnlyChild = person.children.length === 1; // optional
 
-export function PersonNode({ person }: { person: Person }) {
   return (
-    <li>
-      {person.name} (id: {person.uid})
-      {person.children && person.children.length > 0 && (
-        <ul>
+    <li className={`${styles.treeItem} ${isOnlyChild ? styles.treeItemOnlyChild : ''}`}>
+      <div className={styles.node}>
+        {person.name}
+      </div>
+      {person.children.length > 0 && (
+        <ul className={styles.tree}>
           {person.children.map((child) => (
             <PersonNode key={child.uid} person={child} />
           ))}

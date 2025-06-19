@@ -40,8 +40,8 @@ function App() {
 
   const handleCreateRelationship = async () => {
       try {
-        await createParentRelationship(parentId, childId, parentType);
-        const updatedRelationships = await getAllRelationships();
+        await createParentRelationship(parentId, childId, parentType);  // TODO: need better response from backend, and then just add to the list
+        const updatedRelationships = await getAllRelationships();  // TODO: then this call becomes redundant (and that's perfect)
         setRelationships(updatedRelationships);
         setTree(buildFamilyTree(people, updatedRelationships)); // update tree
         setParentId('');
