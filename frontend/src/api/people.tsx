@@ -18,3 +18,8 @@ export async function createPerson(name: string) {
   });
   return response.data;
 }
+
+export async function deletePerson(personId: string) {
+  const response = await axios.delete(`${BASE_URL}/people/${personId}`);
+  return response.data;
+}

@@ -15,3 +15,8 @@ export async function createParentRelationship(parent_id: string, child_id: stri
   });
   return response.data;
 }
+
+export async function deleteParentRelationship(parent_id: string, child_id: string) {
+  const response = await axios.delete(`${BASE_URL}/relationships/${parent_id}/${child_id}`);
+  return response.data;
+}
