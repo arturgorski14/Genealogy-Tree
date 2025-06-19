@@ -38,34 +38,18 @@ def mock_neo4j_driver_with_session(mock_records=None, single_record=None):
     return mock_driver, mock_session
 
 
-def test_get_all_relationships_empty(client):
+@pytest.mark.parametrize(
+    "mock_records",
+    [
+        [],
+        [
+            {"parent_id": "1", "child_id": "2", "type": "father"},
+            {"parent_id": "3", "child_id": "4", "type": "mother"},
+        ],
+    ],
+)
+def test_get_all_relationships(client, mock_records):
     # arrange
-    mock_records = []
-    mock_driver, mock_session = mock_neo4j_driver_with_session(
-        mock_records=mock_records
-    )
-    app.dependency_overrides[get_driver] = lambda: mock_driver
-
-    # act
-    response = client.get("/relationships/")
-
-    # assert
-    assert response.status_code == status.HTTP_200_OK
-    assert response.json() == mock_records
-
-    expected_query = (
-        "MATCH (parent:Person)-[r:PARENT]->(child:Person)"
-        " RETURN parent.uid AS parent_id, child.uid AS child_id, r.type AS type"
-    )
-    mock_session.run.assert_called_once_with(expected_query)
-
-
-def test_get_all_relationships(client):
-    # arrange
-    mock_records = [
-        {"parent_id": "1", "child_id": "2", "type": "father"},
-        {"parent_id": "3", "child_id": "4", "type": "mother"},
-    ]
     mock_driver, mock_session = mock_neo4j_driver_with_session(
         mock_records=mock_records
     )
