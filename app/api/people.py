@@ -42,6 +42,7 @@ def create_person(person: Person, driver=Depends(get_driver)):
 
 @router.delete("/{person_id}")
 def delete_person(person_id: str, driver=Depends(get_driver)):
+    # TODO: remove also all it's relationships
     with driver.session() as session:
         result = session.run(
             "MATCH (p:Person {uid: $uid}) DELETE p RETURN COUNT(p) AS deleted_count",

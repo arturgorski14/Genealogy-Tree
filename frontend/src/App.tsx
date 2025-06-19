@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { getAllPeople, createPerson } from './api/people';
+import { getAllPeople, createPerson, deletePerson } from './api/people';
 import { getAllRelationships } from './api/relationships';
 import { PersonNode, buildFamilyTree } from './person_node';
-import { createParentRelationship } from './api/relationships';
+import { createParentRelationship, deleteParentRelationship } from './api/relationships';
 
 function App() {
   const [people, setPeople] = useState([]);
@@ -49,6 +49,34 @@ function App() {
       } catch (error) {
         console.error('Failed to create relationship', error);
       }
+  };
+
+  const handleDeletePerson = async (uid: string) => {
+  try {
+    await deletePerson(uid);
+    const updatedPeople = people.filter((p) => p.uid !== uid);
+    const updatedRelationships = relationships.filter(
+      (r) => r.parent_id !== uid && r.child_id !== uid
+    );
+    setPeople(updatedPeople);
+    setRelationships(updatedRelationships);
+    setTree(buildFamilyTree(updatedPeople, updatedRelationships));
+  } catch (error) {
+    console.error('Failed to delete person', error);
+  }
+};
+
+const handleDeleteRelationship = async (parentId: string, childId: string) => {
+  try {
+    await deleteParentRelationship(parentId, childId);
+    const updatedRelationships = relationships.filter(
+      (r) => !(r.parent_id === parentId && r.child_id === childId)
+    );
+    setRelationships(updatedRelationships);
+    setTree(buildFamilyTree(people, updatedRelationships));
+  } catch (error) {
+    console.error('Failed to delete relationship', error);
+  }
 };
 
   return (
@@ -59,6 +87,9 @@ function App() {
           {people.map((p) => (
             <li key={p.uid}>
               {p.name} id: {p.uid}
+              <button onClick={() => handleDeletePerson(p.uid)} style={{ marginLeft: '8px', color: 'red' }}>
+                Delete
+              </button>
             </li>
           ))}
         </ul>
@@ -106,6 +137,23 @@ function App() {
           </select>
 
           <button onClick={handleCreateRelationship}>Add Relationship</button>
+        </div>
+
+      <div>
+          <h2>Relationships</h2>
+          <ul>
+            {relationships.map((r) => (
+              <li key={`${r.parent_id}-${r.child_id}`}>
+                parent: {r.parent_id} → child: {r.child_id} ({r.type})
+                <button
+                  onClick={() => handleDeleteRelationship(r.parent_id, r.child_id)}
+                  style={{ marginLeft: '8px', color: 'red' }}
+                >
+                  Delete
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
     </div>
   );
