@@ -19,5 +19,5 @@ NEO4J_FOR_TESTS_PASSWORD = os.getenv("NEO4J_FOR_TESTS_PASSWORD")
 
 if not all((NEO4J_FOR_TESTS_URI, NEO4J_FOR_TESTS_USER, NEO4J_FOR_TESTS_PASSWORD)):
     raise EnvironmentError(
-        "Improperly setup '.env' file for testing. Please check the README.md and adjust."
+        "Improperly setup '.env' file for testing. Check the README.md and adjust."
     )

@@ -5,7 +5,8 @@ import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from app.main import app, get_driver
+from app.database import get_driver
+from app.main import app
 
 
 @pytest.fixture
