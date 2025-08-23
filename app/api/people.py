@@ -20,9 +20,11 @@ def get_all_people(driver=Depends(get_driver)):
 def get_person(person_id: str, driver=Depends(get_driver)):
     with driver.session() as session:
         result = session.run(
-            "MATCH (p:Person {uid: $uid}) RETURN p", uid=person_id
+            "MATCH (p1:Person {uid: $uid})-[r:PARENT]->(p2:Person) RETURN p1,r,p2",
+            uid=person_id,
         )  # noqa E501
         record = result.single()
+        breakpoint()
         if record:
             return {"uid": record["p"]["uid"], "name": record["p"]["name"]}
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Person not found")
