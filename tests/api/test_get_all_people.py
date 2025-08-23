@@ -1,44 +1,51 @@
+import pytest
 from fastapi import status
 
-from app.database import get_driver
+from app.application.bus import QueryBus
+from app.application.queries import GetAllPeopleQuery
+from app.bootstrap import get_query_bus
 from app.main import app
-from tests.conftest import mock_neo4j_driver_with_session
 
 
 def test_get_all_people_empty(client):
-    # arrange
-    mock_driver, mock_session = mock_neo4j_driver_with_session(mock_records=[])
-    app.dependency_overrides[get_driver] = lambda: mock_driver
+    # Arrange
+    class FakeHandler:
+        def handle(self, query):
+            return []
 
-    # act
+    fake_bus = QueryBus()
+    fake_bus.register(GetAllPeopleQuery, FakeHandler())
+
+    app.dependency_overrides[get_query_bus] = lambda: fake_bus
+
+    # Act
     response = client.get("/people")
 
-    # assert
+    # Assert
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == []
 
-    mock_session.run.assert_called_once_with("MATCH (p:Person) RETURN p")
-
 
 def test_get_all_people(client):
-    # arrange
-    mock_records = [
-        {"p": {"uid": "123", "name": "Alice"}},
-        {"p": {"uid": "456", "name": "Bob"}},
-    ]
-    mock_driver, mock_session = mock_neo4j_driver_with_session(
-        mock_records=mock_records
-    )
-    app.dependency_overrides[get_driver] = lambda: mock_driver
+    # Arrange
+    class FakeHandler:
+        def handle(self, query):
+            return [
+                {"uid": "123", "name": "Alice"},
+                {"uid": "456", "name": "Bob"},
+            ]
 
-    # act
+    fake_bus = QueryBus()
+    fake_bus.register(GetAllPeopleQuery, FakeHandler())
+
+    app.dependency_overrides[get_query_bus] = lambda: fake_bus
+
+    # Act
     response = client.get("/people")
 
-    # assert
+    # Assert
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == [
         {"uid": "123", "name": "Alice"},
         {"uid": "456", "name": "Bob"},
     ]
-
-    mock_session.run.assert_called_once_with("MATCH (p:Person) RETURN p")

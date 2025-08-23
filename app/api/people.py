@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends
 
-from app.database import get_driver
+from app.application.bus import QueryBus
+from app.application.queries import GetAllPeopleQuery
+from app.bootstrap import get_query_bus
 
 router = APIRouter()
 
 
 @router.get("/")
-def get_all_people(driver=Depends(get_driver)):
-    with driver.session() as session:
-        result = session.run("MATCH (p:Person) RETURN p")
-        return [{"uid": r["p"]["uid"], "name": r["p"]["name"]} for r in result]
+def get_all_people(query_bus: QueryBus = Depends(get_query_bus)):
+    return query_bus.dispatch(GetAllPeopleQuery())
