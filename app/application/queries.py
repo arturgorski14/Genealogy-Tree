@@ -9,4 +9,3 @@ class GetAllPeopleQuery:
 @dataclass
 class GetPersonQuery:
     uid: str
-    name: str

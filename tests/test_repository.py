@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 
-from app.infrastructure.repository import PeopleRepository
+from app.infrastructure.repository import PeopleRepository, PersonRepository
 
 
 def mock_neo4j_driver_with_session(mock_records=None, single_record=None):
@@ -35,3 +35,18 @@ def test_get_all_people_returns_list():
     assert len(result) == 2
     assert result[0]["name"] == "Alice"
     assert result[1]["uid"] == "2"
+
+
+def test_get_person():
+    # Arrange
+    uid = "1"
+    single_record = {"p": {"uid": uid, "name": "Alice"}}
+    mock_driver, _ = mock_neo4j_driver_with_session(single_record=single_record)
+    repo = PersonRepository(mock_driver)
+    # Act
+    result = repo.get(uid)
+
+    # Assert
+    assert len(result) == 1
+    assert result["p"]["name"] == "Alice"
+    assert result["p"]["uid"] == uid

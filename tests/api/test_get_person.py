@@ -21,9 +21,7 @@ def test_get_person(client):
 
     class FakeHandler:
         def handle(self, query):
-            return [
-                {"uid": uid, "name": "Alice"},
-            ]
+            return {"uid": uid, "name": "Alice"}
 
     fake_bus = QueryBus()
     fake_bus.register(GetPersonQuery, FakeHandler())
@@ -35,6 +33,4 @@ def test_get_person(client):
 
     # Assert
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == [
-        {"uid": {uid}, "name": "Alice"},
-    ]
+    assert response.json() == {"uid": uid, "name": "Alice"}
