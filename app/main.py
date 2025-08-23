@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import people, relationships
+from app.api import people
 
 app = FastAPI()
 
@@ -14,6 +14,3 @@ app.add_middleware(
 )
 
 app.include_router(people.router, prefix="/people", tags=["people"])
-app.include_router(
-    relationships.router, prefix="/relationships", tags=["relationships"]
-)
