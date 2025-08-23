@@ -14,8 +14,8 @@ repos:
         entry: poetry run isort
         language: system
         types: [python]
-      - id: flake8
-        name: flake8
-        entry: poetry run flake8
+      - id: ruff
+        name: ruff
+        entry: poetry run ruff format
         language: system
         types: [python]

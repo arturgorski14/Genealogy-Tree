@@ -54,6 +54,9 @@ project_root/
 ├── pyproject.toml
 └── README.md
 ```
+Domain → pure business logic (Person aggregate).
+Application → orchestrates actions (commands/queries/handlers).
+Infrastructure → persistence & integration (repositories, external systems)
 
 ## 🚀 Quickstart
 
@@ -88,16 +91,21 @@ npm run dev
 
 ### ✅ Testing
 #### 🛠️ Setup Test Environment
-Add the following to your **.env** file for test database access:
-```env
-NEO4J_FOR_TESTS_URI=bolt://localhost:7687       # Default test URI
-NEO4J_FOR_TESTS_USER=neo4j                      # Test user
-NEO4J_FOR_TESTS_PASSWORD=your_password          # Test password
-```
 
 #### 🧪 Run Tests
 ```commandline
 poetry run pytest
+```
+
+### Contributing
+#### Usefull commands
+Clean the files without needing to commit
+```commandline
+pre-commit run --all-files
+```
+Generate coverage report
+```commandline
+pytest --cov=app --cov-report=term-missing
 ```
 
 ### Common Errors
