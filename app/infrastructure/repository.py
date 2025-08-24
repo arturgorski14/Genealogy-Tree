@@ -1,4 +1,5 @@
-from typing import Protocol
+import inspect
+from typing import Any, Protocol
 
 from neo4j import Neo4jDriver
 
@@ -10,8 +11,7 @@ class PersonRepositoryInterface(Protocol):
 
     def get(self, uid: str) -> Person | None: ...
 
-    def create(self, *payload_args, **payload_kwargs):
-        raise NotImplementedError  # TODO: change payload for something more meaningful
+    def create(self, name: str): ...
 
 
 class PersonRepository(PersonRepositoryInterface):
@@ -32,17 +32,28 @@ class PersonRepository(PersonRepositoryInterface):
                 return Person(uid=person["uid"], name=person["name"])
             return None
 
+    def create(self, name: str):
+        raise NotImplementedError  # TODO: change payload for something more meaningful
+
 
 class FakePersonRepository(PersonRepositoryInterface):
     def __init__(self, driver: Neo4jDriver = None):
-        self._calls = []
+        self._calls: list[tuple[str, tuple[Any, ...], dict[str, Any]]] = []
+
+    def _record_call(self, *args, **kwargs):
+        method_name = inspect.currentframe().f_back.f_code.co_name
+        self._calls.append((method_name, args, kwargs))
 
     def get_all(self):
-        self._calls.append(("get_all", (), {}))
+        self._record_call()
         return []
 
     def get(self, uid: str):
-        self._calls.append(("get", (uid,), {}))
+        self._record_call(uid)
+        return None
+
+    def create(self, name: str):
+        self._record_call(name=name)
         return None
 
     def assert_called_once_with(self, method_name: str, *args, **kwargs) -> None:
