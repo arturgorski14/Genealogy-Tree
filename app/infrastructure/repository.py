@@ -31,8 +31,11 @@ class PersonRepository(PersonRepositoryInterface):
 
 
 class FakePersonRepository(PersonRepositoryInterface):
-    def __init__(self, driver=None):
-        self._data = [Person(uid="1", name="Alice"), Person(uid="2", name="Bob")]
+    def __init__(self, driver=None, populate: bool = True):
+        if populate:
+            self._data = [Person(uid="1", name="Alice"), Person(uid="2", name="Bob")]
+        else:
+            self._data = []
         self.calls = []
 
     def get_all(self):

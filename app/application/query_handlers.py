@@ -18,5 +18,8 @@ class GetPersonHandler:
 
 
 class FakeHandler:
+    def __init__(self, repository: PersonRepositoryInterface = None):
+        self.repository = repository
+
     def handle(self, query):
         return "handled"
