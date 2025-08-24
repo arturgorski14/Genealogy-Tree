@@ -13,15 +13,15 @@ class PersonRepositoryInterface(Protocol):
 
 class PersonRepository(PersonRepositoryInterface):
     def __init__(self, driver: Neo4jDriver):
-        self.driver = driver
+        self._driver = driver
 
     def get_all(self) -> list[Person]:
-        with self.driver.session() as session:
+        with self._driver.session() as session:
             result = session.run("MATCH (p:Person) RETURN p")
             return [Person(uid=r["p"]["uid"], name=r["p"]["name"]) for r in result]
 
     def get(self, uid: str) -> Person | None:
-        with self.driver.session() as session:
+        with self._driver.session() as session:
             result = session.run("MATCH (p:Person {uid: $uid}) RETURN p", uid=uid)
             record = result.single()
             if record:
@@ -31,7 +31,7 @@ class PersonRepository(PersonRepositoryInterface):
 
 
 class FakePersonRepository(PersonRepositoryInterface):
-    def __init__(self, driver=None):
+    def __init__(self, driver: Neo4jDriver = None):
         self._calls = []
 
     def get_all(self):

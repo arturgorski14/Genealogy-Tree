@@ -1,10 +1,10 @@
 class QueryBus:
     def __init__(self):
-        self.handlers = {}
+        self._handlers = {}
 
     def register(self, query_type, handler):
-        self.handlers[query_type] = handler
+        self._handlers[query_type] = handler
 
     def dispatch(self, query):
-        handler = self.handlers[type(query)]
+        handler = self._handlers[type(query)]
         return handler.handle(query)
