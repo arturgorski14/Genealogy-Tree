@@ -107,6 +107,15 @@ Generate coverage report
 ```commandline
 pytest --cov=app --cov-report=term-missing
 ```
+Remove local branches (fully merged to main)
+- Linux
+```commandline
+git branch | grep -v "main" | xargs git branch -d
+```
+- Windows
+```commandline
+git branch | Where-Object { $_ -notmatch "main" } | ForEach-Object { git branch -d $_.Trim() }
+```
 
 ### Common Errors
 #### 1.
