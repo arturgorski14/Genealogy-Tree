@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock
 
+from app.domain.person import Person
 from app.infrastructure.repository import PeopleRepository, PersonRepository
 
 
@@ -29,24 +30,38 @@ def test_get_all_people_returns_list():
     repo = PeopleRepository(mock_driver)
 
     # Act
-    result = repo.get_all()
-
+    result: list[Person] = repo.get_all()
     # Assert
     assert len(result) == 2
-    assert result[0]["name"] == "Alice"
-    assert result[1]["uid"] == "2"
+    assert result[0].uid == "1"
+    assert result[0].name == "Alice"
+    assert result[1].uid == "2"
+    assert result[1].name == "Bob"
 
 
 def test_get_person():
     # Arrange
     uid = "1"
-    single_record = {"p": {"uid": uid, "name": "Alice"}}
+    name = "Alice"
+    single_record = {"p": {"uid": uid, "name": name}}
     mock_driver, _ = mock_neo4j_driver_with_session(single_record=single_record)
+    repo = PersonRepository(mock_driver)
+
+    # Act
+    result = repo.get(uid)
+
+    # Assert
+    assert result.uid == uid
+    assert result.name == name
+
+
+def test_get_person_with_invalid_uid():
+    # Arrange
+    uid = "non-existent-uid"
+    mock_driver, _ = mock_neo4j_driver_with_session(single_record=None)
     repo = PersonRepository(mock_driver)
     # Act
     result = repo.get(uid)
 
     # Assert
-    assert len(result) == 1
-    assert result["p"]["name"] == "Alice"
-    assert result["p"]["uid"] == uid
+    assert result is None
