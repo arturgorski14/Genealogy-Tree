@@ -15,3 +15,8 @@ class GetPersonHandler:
 
     def handle(self, query):
         return self.repository.get(query.uid)
+
+
+class FakeHandler:
+    def handle(self, query):
+        return "handled"
