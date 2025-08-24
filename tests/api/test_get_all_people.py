@@ -2,18 +2,18 @@ from fastapi import status
 
 from app.application.bus import QueryBus
 from app.application.queries import GetAllPeopleQuery
+from app.application.query_handlers import FakeHandler, GetAllPeopleHandler
 from app.bootstrap import get_query_bus
+from app.infrastructure.repository import FakePersonRepository
 from app.main import app
 
 
 def test_get_all_people_empty(client):
     # Arrange
-    class FakeHandler:
-        def handle(self, query):
-            return []
-
     fake_bus = QueryBus()
-    fake_bus.register(GetAllPeopleQuery, FakeHandler())
+    fake_bus.register(
+        GetAllPeopleQuery, GetAllPeopleHandler(FakePersonRepository(populate=False))
+    )
 
     app.dependency_overrides[get_query_bus] = lambda: fake_bus
 
@@ -27,15 +27,8 @@ def test_get_all_people_empty(client):
 
 def test_get_all_people(client):
     # Arrange
-    class FakeHandler:
-        def handle(self, query):
-            return [
-                {"uid": "123", "name": "Alice"},
-                {"uid": "456", "name": "Bob"},
-            ]
-
     fake_bus = QueryBus()
-    fake_bus.register(GetAllPeopleQuery, FakeHandler())
+    fake_bus.register(GetAllPeopleQuery, GetAllPeopleHandler(FakePersonRepository()))
 
     app.dependency_overrides[get_query_bus] = lambda: fake_bus
 
@@ -45,6 +38,6 @@ def test_get_all_people(client):
     # Assert
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == [
-        {"uid": "123", "name": "Alice"},
-        {"uid": "456", "name": "Bob"},
+        {"uid": "1", "name": "Alice"},
+        {"uid": "2", "name": "Bob"},
     ]
