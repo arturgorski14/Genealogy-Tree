@@ -15,8 +15,8 @@ class TestPersonRepositoryWithNeo4j(PersonRepositoryContract):
         mock_driver, _ = mock_neo4j_driver_with_session(mock_records=mock_records)
         return PersonRepository(mock_driver)
 
-    # @pytest.fixture
-    # def repository_with_single(self):
-    #     single_record = {"p": {"uid": "1", "name": "Alice"}}
-    #     mock_driver, _ = mock_neo4j_driver_with_session(single_record=single_record)
-    #     return PersonRepository(mock_driver)
+    @pytest.fixture
+    def repository_with_single(self):
+        single_record = {"p": {"uid": "1", "name": "Alice"}}
+        mock_driver, _ = mock_neo4j_driver_with_session(single_record=single_record)
+        return PersonRepository(mock_driver)

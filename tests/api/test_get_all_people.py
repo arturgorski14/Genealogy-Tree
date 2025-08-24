@@ -2,18 +2,17 @@ from fastapi import status
 
 from app.application.bus import QueryBus
 from app.application.queries import GetAllPeopleQuery
-from app.application.query_handlers import FakeHandler, GetAllPeopleHandler
+from app.application.query_handlers import GetAllPeopleHandler
 from app.bootstrap import get_query_bus
-from app.infrastructure.repository import FakePersonRepository
+from app.infrastructure.repository import PersonRepository
 from app.main import app
 
 
-def test_get_all_people_empty(client):
+def test_get_all_people_empty(client, mocked_driver_without_data):
     # Arrange
+    repo = PersonRepository(driver=mocked_driver_without_data)
     fake_bus = QueryBus()
-    fake_bus.register(
-        GetAllPeopleQuery, GetAllPeopleHandler(FakePersonRepository(populate=False))
-    )
+    fake_bus.register(GetAllPeopleQuery, GetAllPeopleHandler(repo))
 
     app.dependency_overrides[get_query_bus] = lambda: fake_bus
 
@@ -25,10 +24,11 @@ def test_get_all_people_empty(client):
     assert response.json() == []
 
 
-def test_get_all_people(client):
+def test_get_all_people(client, mocked_driver_with_data):
     # Arrange
+    repo = PersonRepository(driver=mocked_driver_with_data)
     fake_bus = QueryBus()
-    fake_bus.register(GetAllPeopleQuery, GetAllPeopleHandler(FakePersonRepository()))
+    fake_bus.register(GetAllPeopleQuery, GetAllPeopleHandler(repo))
 
     app.dependency_overrides[get_query_bus] = lambda: fake_bus
 
