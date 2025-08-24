@@ -1,7 +1,9 @@
+from typing import Type
+
 import pytest
 
 from app.application.bus import QueryBus
-from app.application.queries import GetAllPeopleQuery
+from app.application.queries import GetAllPeopleQuery, GetPersonQuery
 
 
 class FakeHandler:
@@ -9,17 +11,29 @@ class FakeHandler:
         return "handled"
 
 
-def test_query_bus_dispatches_to_handler():
+@pytest.mark.parametrize(
+    "query, query_args, query_kwargs",
+    [
+        (GetAllPeopleQuery, (), {}),
+        (GetPersonQuery, ("uid-1234",), {}),
+    ],
+)
+def test_query_bus_dispatches_to_handler(query: Type, query_args, query_kwargs):
+    # Arrange
     bus = QueryBus()
-    bus.register(GetAllPeopleQuery, FakeHandler())
+    bus.register(query, FakeHandler())
 
-    result = bus.dispatch(GetAllPeopleQuery())
+    # Act
+    result = bus.dispatch(query(*query_args, **query_kwargs))
 
+    # Assert
     assert result == "handled"
 
 
 def test_query_bus_dispatches_unregistered_query():
+    # Arrange
     bus = QueryBus()
 
+    # Act & Assert
     with pytest.raises(KeyError):
         bus.dispatch(GetAllPeopleQuery())
