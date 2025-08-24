@@ -30,24 +30,17 @@ class PersonRepository(PersonRepositoryInterface):
             return None
 
 
-class FakePersonRepository(
-    PersonRepositoryInterface
-):  # TODO: unnecessary, can get rid of
-    def __init__(self, driver=None, populate: bool = True):
-        raise NotImplementedError
-        if populate:
-            self._data = [Person(uid="1", name="Alice"), Person(uid="2", name="Bob")]
-        else:
-            self._data = []
+class FakePersonRepository(PersonRepositoryInterface):
+    def __init__(self, driver=None):
         self._calls = []
 
     def get_all(self):
         self._calls.append(("get_all", (), {}))
-        return self._data
+        return []
 
     def get(self, uid: str):
         self._calls.append(("get", (uid,), {}))
-        return next((p for p in self._data if p.uid == uid), None)
+        return None
 
     def assert_called_once_with(self, method_name: str, *args, **kwargs) -> None:
         matching_calls = [c for c in self._calls if c[0] == method_name]
