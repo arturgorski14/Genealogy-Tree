@@ -1,16 +1,7 @@
 from app.application.queries import GetAllPeopleQuery, GetPersonQuery
 from app.application.query_handlers import GetAllPeopleHandler, GetPersonHandler
 from app.domain.person import Person
-
-
-class FakeRepo:
-    _data = [Person(uid="1", name="Alice")]
-
-    def get_all(self):
-        return self._data
-
-    def get(self, uid: str):
-        return next((p for p in self._data if p.uid == uid), None)
+from tests.fakes import FakeRepo
 
 
 def test_get_all_people_handler_uses_repo():
@@ -22,7 +13,9 @@ def test_get_all_people_handler_uses_repo():
     result = handler.handle(query)
 
     # Assert
-    assert result == [Person(uid="1", name="Alice")]
+    assert len(result) == 2
+    assert result[0] == Person(uid="1", name="Alice")
+    assert result[1] == Person(uid="2", name="Bob")
 
 
 def test_get_person():

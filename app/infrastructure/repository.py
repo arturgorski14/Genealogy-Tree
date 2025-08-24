@@ -1,19 +1,24 @@
+from typing import Protocol
+
+from neo4j import Neo4jDriver
+
 from app.domain.person import Person
 
 
-class PeopleRepository:
-    def __init__(self, driver):
+class PersonRepositoryInterface(Protocol):
+    def get_all(self) -> list[Person]: ...
+
+    def get(self, uid: str) -> Person | None: ...
+
+
+class PersonRepository(PersonRepositoryInterface):
+    def __init__(self, driver: Neo4jDriver):
         self.driver = driver
 
     def get_all(self) -> list[Person]:
         with self.driver.session() as session:
             result = session.run("MATCH (p:Person) RETURN p")
             return [Person(uid=r["p"]["uid"], name=r["p"]["name"]) for r in result]
-
-
-class PersonRepository:
-    def __init__(self, driver):
-        self.driver = driver
 
     def get(self, uid: str) -> Person | None:
         with self.driver.session() as session:
