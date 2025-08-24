@@ -15,7 +15,7 @@ def test_get_all_people_handler_delegates():
     handler.handle(query)
 
     # Assert
-    assert repo._called_method == "get_all"
+    repo.assert_called_once_with("get_all")
 
 
 @pytest.mark.parametrize("uid", ["1", "non-existent"])
@@ -29,5 +29,4 @@ def test_get_person_handler_delegates(uid):
     handler.handle(query)
 
     # Assert
-    assert repo._called_method == "get"
-    assert repo._called_args == uid
+    repo.assert_called_once_with("get", uid)
