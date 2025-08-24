@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 from starlette.testclient import TestClient
 
+from app.domain.person import Person
 from app.main import app
 
 
@@ -32,3 +33,23 @@ def mock_neo4j_driver_with_session(mock_records=None, single_record=None):
     mock_driver = MagicMock()
     mock_driver.session.return_value.__enter__.return_value = mock_session
     return mock_driver, mock_session
+
+
+@pytest.fixture
+def mocked_driver_with_data():
+    _data = [
+        {"p": {"uid": "1", "name": "Alice"}},
+        {"p": {"uid": "2", "name": "Bob"}},
+    ]
+    return mock_neo4j_driver_with_session(mock_records=_data)[0]
+
+
+@pytest.fixture
+def mocked_driver_with_single_record():
+    _data = {"p": {"uid": "1", "name": "Alice"}}
+    return mock_neo4j_driver_with_session(single_record=_data)[0]
+
+
+@pytest.fixture
+def mocked_driver_without_data():
+    return mock_neo4j_driver_with_session()[0]
