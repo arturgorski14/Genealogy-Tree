@@ -10,6 +10,9 @@ class PersonRepositoryInterface(Protocol):
 
     def get(self, uid: str) -> Person | None: ...
 
+    def create(self, *payload_args, **payload_kwargs):
+        raise NotImplementedError  # TODO: change payload for something more meaningful
+
 
 class PersonRepository(PersonRepositoryInterface):
     def __init__(self, driver: Neo4jDriver):

@@ -18,3 +18,12 @@ def test_get_returns_person(mocked_driver_with_single_record):
 def test_get_returns_none_for_missing_uid(mocked_driver_without_data):
     repository = PersonRepository(driver=mocked_driver_without_data)
     assert repository.get("non-existent") is None
+
+
+def test_create_person_object(mocked_driver_without_data):
+    repository = PersonRepository(driver=mocked_driver_without_data)
+    payload = {"name": "fake"}
+
+    created = repository.create(**payload)
+
+    assert created.uid is not None
