@@ -1,4 +1,5 @@
 import inspect
+import uuid
 from typing import Any, Protocol
 
 from neo4j import Neo4jDriver
@@ -11,7 +12,7 @@ class PersonRepositoryInterface(Protocol):
 
     def get(self, uid: str) -> Person | None: ...
 
-    def create(self, name: str): ...
+    def create(self, name: str) -> Person: ...
 
 
 class PersonRepository(PersonRepositoryInterface):
@@ -32,8 +33,17 @@ class PersonRepository(PersonRepositoryInterface):
                 return Person(uid=person["uid"], name=person["name"])
             return None
 
-    def create(self, name: str):
-        raise NotImplementedError  # TODO: change payload for something more meaningful
+    def create(self, name: str) -> Person:
+        with self._driver.session() as session:
+            uid = str(uuid.uuid4())
+            result = session.run(
+                "CREATE (p:Person {uid: $uid, name: $name}) RETURN p",
+                uid=uid,
+                name=name,
+            )
+            record = result.single()
+            person = record["p"]
+            return Person(uid=person["uid"], name=person["name"])
 
 
 class FakePersonRepository(PersonRepositoryInterface):
