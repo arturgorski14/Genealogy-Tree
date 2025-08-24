@@ -26,4 +26,5 @@ def test_create_person_object(mocked_driver_without_data):
 
     created = repository.create(**payload)
 
+    assert isinstance(created, Person)
     assert created.uid is not None
