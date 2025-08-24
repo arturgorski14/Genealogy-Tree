@@ -7,8 +7,22 @@ from app.bootstrap import get_query_bus
 from app.main import app
 
 
-@pytest.mark.skip(reason="Not implemented yet")
-def test_get_nonexistent_person(client): ...
+def test_get_nonexistent_person(client):
+    # Arrange
+    class FakeHandler:
+        def handle(self, query):
+            return None
+
+    fake_bus = QueryBus()
+    fake_bus.register(GetPersonQuery, FakeHandler())
+    app.dependency_overrides[get_query_bus] = lambda: fake_bus
+
+    # Act
+    response = client.get("/people/non-existent-uid")
+
+    # Assert
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.json() == {"detail": "Person not found"}
 
 
 @pytest.mark.skip(reason="Not implemented yet")
