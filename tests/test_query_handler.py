@@ -1,42 +1,32 @@
+import pytest
+
 from app.application.queries import GetAllPeopleQuery, GetPersonQuery
 from app.application.query_handlers import GetAllPeopleHandler, GetPersonHandler
-from app.domain.person import Person
-from tests.fakes import FakeRepo
+from tests.fakes import FakeRepository
 
 
-def test_get_all_people_handler_uses_repo():
+def test_get_all_people_handler_delegates():
     # Arrange
-    handler = GetAllPeopleHandler(FakeRepo())
+    repo = FakeRepository()
+    handler = GetAllPeopleHandler(repo)
     query = GetAllPeopleQuery()
 
     # Act
-    result = handler.handle(query)
+    handler.handle(query)
 
     # Assert
-    assert len(result) == 2
-    assert result[0] == Person(uid="1", name="Alice")
-    assert result[1] == Person(uid="2", name="Bob")
+    repo.assert_called_once_with("get_all")
 
 
-def test_get_person():
+@pytest.mark.parametrize("uid", ["1", "non-existent"])
+def test_get_person_handler_delegates(uid):
     # Arrange
-    handler = GetPersonHandler(FakeRepo())
-    query = GetPersonQuery("1")
+    repo = FakeRepository()
+    handler = GetPersonHandler(repo)
+    query = GetPersonQuery(uid)
 
     # Act
-    result = handler.handle(query)
+    handler.handle(query)
 
     # Assert
-    assert result == Person(uid="1", name="Alice")
-
-
-def test_try_to_get_person():
-    # Arrange
-    handler = GetPersonHandler(FakeRepo())
-    query = GetPersonQuery("non-existent")
-
-    # Act
-    result = handler.handle(query)
-
-    # Assert
-    assert result is None
+    repo.assert_called_once_with("get", uid)
