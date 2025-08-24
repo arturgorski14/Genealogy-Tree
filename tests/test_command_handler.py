@@ -1,5 +1,5 @@
-from app.application.command import CreatePersonCommand
 from app.application.command_handler import CreatePersonHandler
+from app.application.commands import CreatePersonCommand
 from app.infrastructure.repository import FakePersonRepository
 
 

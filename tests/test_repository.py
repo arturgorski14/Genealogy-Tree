@@ -25,6 +25,7 @@ def test_get_returns_person(mocked_driver_with_single_record):
 
     # Assert
     assert isinstance(existing, Person)
+    assert existing.uid == "1"
 
 
 def test_get_returns_none_for_missing_uid(mocked_driver_without_data):

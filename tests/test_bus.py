@@ -3,7 +3,7 @@ from typing import Type
 import pytest
 
 from app.application.bus import CommandBus, QueryBus
-from app.application.command import CreatePersonCommand
+from app.application.commands import CreatePersonCommand
 from app.application.queries import GetAllPeopleQuery, GetPersonQuery
 from app.application.query_handlers import FakeHandler
 
