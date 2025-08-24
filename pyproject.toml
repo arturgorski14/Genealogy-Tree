@@ -40,3 +40,8 @@ line_length = 88
 
 [tool.ruff]
 line-length = 88
+
+[tool.pytest.ini_options]
+markers = [
+    "contract: marks tests as contract tests (run against all repo implementations)"
+]

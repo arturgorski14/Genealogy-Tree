@@ -17,7 +17,7 @@ load_dotenv()
 settings = Settings.model_validate({})
 
 
-def get_driver():
+def get_driver():  # TODO: consider Singleton
     return GraphDatabase.driver(
         settings.neo4j_uri,
         auth=(settings.neo4j_user, settings.neo4j_password),
