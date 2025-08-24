@@ -4,11 +4,7 @@ import pytest
 
 from app.application.bus import QueryBus
 from app.application.queries import GetAllPeopleQuery, GetPersonQuery
-
-
-class FakeHandler:
-    def handle(self, query):
-        return "handled"
+from tests.fakes import FakeHandler
 
 
 @pytest.mark.parametrize(

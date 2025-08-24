@@ -28,3 +28,8 @@ class FakeRepository(PersonRepositoryInterface):
                 f"{method_name} called with {called_args}, {called_kwargs}, "
                 f"expected {args}, {kwargs}"
             )
+
+
+class FakeHandler:
+    def handle(self, query):
+        return "handled"
