@@ -34,6 +34,7 @@ class FakePersonRepository(
     PersonRepositoryInterface
 ):  # TODO: unnecessary, can get rid of
     def __init__(self, driver=None, populate: bool = True):
+        raise NotImplementedError
         if populate:
             self._data = [Person(uid="1", name="Alice"), Person(uid="2", name="Bob")]
         else:

@@ -4,15 +4,17 @@ from app.application.bus import QueryBus
 from app.application.queries import GetPersonQuery
 from app.application.query_handlers import GetPersonHandler
 from app.bootstrap import get_query_bus
-from app.infrastructure.repository import FakePersonRepository
+from app.infrastructure.repository import PersonRepository
 from app.main import app
+from tests.conftest import mocked_driver_without_data
 
 
-def test_get_person(client):
+def test_get_person(client, mocked_driver_with_single_record):
     # Arrange
     uid = "1"
+    repo = PersonRepository(mocked_driver_with_single_record)
     fake_bus = QueryBus()
-    fake_bus.register(GetPersonQuery, GetPersonHandler(FakePersonRepository()))
+    fake_bus.register(GetPersonQuery, GetPersonHandler(repo))
 
     app.dependency_overrides[get_query_bus] = lambda: fake_bus
     # Act
@@ -25,10 +27,11 @@ def test_get_person(client):
     assert isinstance(data["name"], str)
 
 
-def test_get_nonexistent_person(client):
+def test_get_nonexistent_person(client, mocked_driver_without_data):
     # Arrange
+    repo = PersonRepository(mocked_driver_without_data)
     fake_bus = QueryBus()
-    fake_bus.register(GetPersonQuery, GetPersonHandler(FakePersonRepository()))
+    fake_bus.register(GetPersonQuery, GetPersonHandler(repo))
     app.dependency_overrides[get_query_bus] = lambda: fake_bus
 
     # Act
@@ -39,10 +42,11 @@ def test_get_nonexistent_person(client):
     assert response.json() == {"detail": "Person not found"}
 
 
-def test_get_person_with_invalid_uid(client):
+def test_get_person_with_invalid_uid(client, mocked_driver_without_data):
     # Arrange
+    repo = PersonRepository(mocked_driver_without_data)
     fake_bus = QueryBus()
-    fake_bus.register(GetPersonQuery, GetPersonHandler(FakePersonRepository()))
+    fake_bus.register(GetPersonQuery, GetPersonHandler(repo))
     app.dependency_overrides[get_query_bus] = lambda: fake_bus
 
     # Act
