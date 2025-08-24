@@ -2,7 +2,8 @@ from typing import Type
 
 import pytest
 
-from app.application.bus import QueryBus
+from app.application.bus import CommandBus, QueryBus
+from app.application.command import CreatePersonCommand
 from app.application.queries import GetAllPeopleQuery, GetPersonQuery
 from app.application.query_handlers import FakeHandler
 
@@ -33,3 +34,25 @@ def test_query_bus_dispatches_unregistered_query():
     # Act & Assert
     with pytest.raises(KeyError):
         bus.dispatch(GetAllPeopleQuery())
+
+
+def test_command_bus_dispatches_to_handler():
+    # Arrange
+    command = CreatePersonCommand
+    bus = CommandBus()
+    bus.register(command, FakeHandler())
+
+    # Act
+    result = bus.dispatch(command("name-fake"))
+
+    # Assert
+    assert result == "handled"
+
+
+def test_query_bus_dispatches_unregistered_command():
+    # Arrange
+    bus = CommandBus()
+
+    # Act & Assert
+    with pytest.raises(KeyError):
+        bus.dispatch(CreatePersonCommand("fake-name"))

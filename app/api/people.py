@@ -21,3 +21,8 @@ def get_person(uid: str, query_bus: QueryBus = Depends(get_query_bus)):
             status_code=status.HTTP_404_NOT_FOUND, detail="Person not found"
         )
     return result
+
+
+@router.post("/{uid}")
+def create_person(uid: str, query_bus: QueryBus = Depends(get_query_bus)):
+    raise NotImplementedError
