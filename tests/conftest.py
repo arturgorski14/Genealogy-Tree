@@ -56,5 +56,5 @@ def mocked_driver_without_data():
 
 
 @pytest.fixture
-def repo():
+def person_repo():
     return FakePersonRepository()
