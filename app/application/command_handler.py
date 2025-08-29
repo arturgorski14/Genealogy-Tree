@@ -6,4 +6,4 @@ class CreatePersonHandler:
         self._repository = repository
 
     def handle(self, query):
-        return self._repository.create(query.name)
+        return self._repository.create(name=query.name)

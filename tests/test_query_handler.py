@@ -2,12 +2,10 @@ import pytest
 
 from app.application.queries import GetAllPeopleQuery, GetPersonQuery
 from app.application.query_handlers import GetAllPeopleHandler, GetPersonHandler
-from app.infrastructure.repository import FakePersonRepository
 
 
-def test_get_all_people_handler_delegates():
+def test_get_all_people_handler_delegates(repo):
     # Arrange
-    repo = FakePersonRepository()
     handler = GetAllPeopleHandler(repo)
     query = GetAllPeopleQuery()
 
@@ -15,13 +13,12 @@ def test_get_all_people_handler_delegates():
     handler.handle(query)
 
     # Assert
-    repo.assert_called_once_with("get_all")
+    repo.get_all.assert_called_once_with()
 
 
 @pytest.mark.parametrize("uid", ["1", "non-existent"])
-def test_get_person_handler_delegates(uid):
+def test_get_person_handler_delegates(uid, repo):
     # Arrange
-    repo = FakePersonRepository()
     handler = GetPersonHandler(repo)
     query = GetPersonQuery(uid)
 
@@ -29,4 +26,4 @@ def test_get_person_handler_delegates(uid):
     handler.handle(query)
 
     # Assert
-    repo.assert_called_once_with("get", uid)
+    repo.get.assert_called_once_with(uid=uid)

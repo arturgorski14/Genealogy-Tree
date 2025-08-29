@@ -14,7 +14,7 @@ class GetPersonHandler:
         self._repository = repository
 
     def handle(self, query):
-        return self._repository.get(query.uid)
+        return self._repository.get(uid=query.uid)
 
 
 class FakeHandler:

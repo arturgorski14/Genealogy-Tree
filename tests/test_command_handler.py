@@ -1,12 +1,10 @@
 from app.application.command_handler import CreatePersonHandler
 from app.application.commands import CreatePersonCommand
-from app.infrastructure.repository import FakePersonRepository
 
 
-def test_create_person_handler_delegates():
+def test_create_person_handler_delegates(repo):
     # Arrange
     payload = {"name": "fake"}  # TODO: change payload for something more meaningful
-    repo = FakePersonRepository()
     handler = CreatePersonHandler(repo)
     command = CreatePersonCommand
 
@@ -14,4 +12,4 @@ def test_create_person_handler_delegates():
     handler.handle(command(**payload))
 
     # Assert
-    repo.assert_called_once_with("create", **payload)
+    repo.create.assert_called_once_with(**payload)
