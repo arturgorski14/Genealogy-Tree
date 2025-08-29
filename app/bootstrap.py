@@ -7,7 +7,7 @@ from app.core.config import get_driver
 from app.infrastructure.repository import PersonRepository
 
 
-def _build_busses_bus() -> tuple[QueryBus, CommandBus]:
+def _build_busses() -> tuple[QueryBus, CommandBus]:
     driver = get_driver()
     person_repo = PersonRepository(driver)
 
@@ -21,7 +21,7 @@ def _build_busses_bus() -> tuple[QueryBus, CommandBus]:
     return query_bus, command_bus
 
 
-_query_bus, _command_bus = _build_busses_bus()
+_query_bus, _command_bus = _build_busses()
 
 
 def get_query_bus() -> QueryBus:
