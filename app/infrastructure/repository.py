@@ -46,6 +46,6 @@ class PersonRepository(PersonRepositoryInterface):
             return Person(uid=person["uid"], name=person["name"])
 
 
-class FakePersonRepository:
+class FakePersonRepository(PersonRepositoryInterface):
     def __new__(cls, *args, **kwargs):
         return MagicMock(spec=PersonRepositoryInterface)

@@ -1,5 +1,5 @@
 from app.application.bus import CommandBus, QueryBus
-from app.application.command_handler import CreatePersonHandler
+from app.application.command_handlers import CreatePersonHandler
 from app.application.commands import CreatePersonCommand
 from app.application.queries import GetAllPeopleQuery, GetPersonQuery
 from app.application.query_handlers import GetAllPeopleHandler, GetPersonHandler

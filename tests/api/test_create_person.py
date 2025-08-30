@@ -2,7 +2,7 @@ import pytest
 from starlette import status
 
 from app.application.bus import CommandBus
-from app.application.command_handler import CreatePersonHandler
+from app.application.command_handlers import CreatePersonHandler
 from app.application.commands import CreatePersonCommand
 from app.bootstrap import get_command_bus
 from app.infrastructure.repository import PersonRepository

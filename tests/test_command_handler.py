@@ -1,4 +1,4 @@
-from app.application.command_handler import CreatePersonHandler
+from app.application.command_handlers import CreatePersonHandler
 from app.application.commands import CreatePersonCommand
 
 
