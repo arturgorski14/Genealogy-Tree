@@ -49,7 +49,7 @@ def test_command_bus_dispatches_to_handler():
     assert result == "handled"
 
 
-def test_query_bus_dispatches_unregistered_command():
+def test_command_bus_dispatches_unregistered_command():
     # Arrange
     bus = CommandBus()
 
