@@ -1,11 +1,11 @@
-from app.application.generics import Command, Query
+from app.application.generics import Command, Query, QueryHandler
 
 
 class QueryBus:
     def __init__(self):
         self._handlers = {}
 
-    def register(self, query_type, handler):
+    def register(self, query_type, handler: QueryHandler):
         self._handlers[query_type] = handler
 
     def dispatch(self, query: Query):
