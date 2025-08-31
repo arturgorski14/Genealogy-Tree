@@ -32,7 +32,10 @@ def test_query_bus_dispatches_unregistered_query():
     bus = QueryBus()
 
     # Act & Assert
-    with pytest.raises(KeyError):
+    with pytest.raises(
+        KeyError,
+        match=f"Query {GetAllPeopleQuery.__name__} not registered in {bus.__class__.__name__}.",
+    ):
         bus.dispatch(GetAllPeopleQuery())
 
 
@@ -54,5 +57,8 @@ def test_command_bus_dispatches_unregistered_command():
     bus = CommandBus()
 
     # Act & Assert
-    with pytest.raises(KeyError):
+    with pytest.raises(
+        KeyError,
+        match=f"Command {CreatePersonCommand.__name__} not registered in {bus.__class__.__name__}.",
+    ):
         bus.dispatch(CreatePersonCommand("fake-name"))
