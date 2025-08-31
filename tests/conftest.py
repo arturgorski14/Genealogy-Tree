@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 from starlette.testclient import TestClient
 
-from app.domain.person import Person
+from app.infrastructure.repository import FakePersonRepository
 from app.main import app
 
 
@@ -53,3 +53,8 @@ def mocked_driver_with_single_record():
 @pytest.fixture
 def mocked_driver_without_data():
     return mock_neo4j_driver_with_session()[0]
+
+
+@pytest.fixture
+def person_repo():
+    return FakePersonRepository()

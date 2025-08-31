@@ -16,6 +16,11 @@ repos:
         types: [python]
       - id: ruff
         name: ruff
-        entry: poetry run ruff format
+        entry: poetry run ruff check --fix
+        language: system
+        types: [python]
+      - id: mypy
+        name: mypy
+        entry: poetry run mypy
         language: system
         types: [python]

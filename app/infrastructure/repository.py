@@ -1,6 +1,6 @@
-import inspect
 import uuid
-from typing import Any, Protocol
+from typing import Protocol
+from unittest.mock import MagicMock
 
 from neo4j import Neo4jDriver
 
@@ -42,38 +42,16 @@ class PersonRepository(PersonRepositoryInterface):
                 name=name,
             )
             record = result.single()
+            if not record:
+                raise PersonCreationError("Database did not return created person")
             person = record["p"]
             return Person(uid=person["uid"], name=person["name"])
 
 
 class FakePersonRepository(PersonRepositoryInterface):
-    def __init__(self, driver: Neo4jDriver = None):
-        self._calls: list[tuple[str, tuple[Any, ...], dict[str, Any]]] = []
+    def __new__(cls, *args, **kwargs):
+        return MagicMock(spec=PersonRepositoryInterface)
 
-    def _record_call(self, *args, **kwargs):
-        method_name = inspect.currentframe().f_back.f_code.co_name
-        self._calls.append((method_name, args, kwargs))
 
-    def get_all(self):
-        self._record_call()
-        return []
-
-    def get(self, uid: str):
-        self._record_call(uid)
-        return None
-
-    def create(self, name: str):
-        self._record_call(name=name)
-        return None
-
-    def assert_called_once_with(self, method_name: str, *args, **kwargs) -> None:
-        matching_calls = [c for c in self._calls if c[0] == method_name]
-        assert len(matching_calls) == 1, (
-            f"Expected {method_name} to be called once."
-            f"Called {len(matching_calls)} times."
-        )
-        called_args, called_kwargs = matching_calls[0][1], matching_calls[0][2]
-        assert called_args == args and called_kwargs == kwargs, (
-            f"{method_name} called with {called_args}, {called_kwargs},"
-            f"expected {args}, {kwargs}"
-        )
+class PersonCreationError(RuntimeError):
+    """Raised when a person could not be created in the repository."""

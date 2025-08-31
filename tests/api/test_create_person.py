@@ -2,7 +2,7 @@ import pytest
 from starlette import status
 
 from app.application.bus import CommandBus
-from app.application.command_handler import CreatePersonHandler
+from app.application.command_handlers import CreatePersonHandler
 from app.application.commands import CreatePersonCommand
 from app.bootstrap import get_command_bus
 from app.infrastructure.repository import PersonRepository
@@ -22,7 +22,7 @@ def test_create_person(client):
     app.dependency_overrides[get_command_bus] = lambda: fake_bus
 
     # Act
-    response = client.post(f"/people/", json={"name": name})
+    response = client.post("/people/", json={"name": name})
     # Assert
     assert response.status_code == status.HTTP_201_CREATED
     data = response.json()
