@@ -22,7 +22,7 @@ def test_create_person(client):
     app.dependency_overrides[get_command_bus] = lambda: fake_bus
 
     # Act
-    response = client.post(f"/people/", json={"name": name})
+    response = client.post("/people/", json={"name": name})
     # Assert
     assert response.status_code == status.HTTP_201_CREATED
     data = response.json()

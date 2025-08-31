@@ -1,3 +1,5 @@
+from typing import Optional
+
 from app.application.generics import Query, QueryHandler
 from app.application.queries import GetAllPeopleQuery, GetPersonQuery
 from app.domain.person import Person
@@ -23,7 +25,7 @@ class GetPersonHandler(QueryHandler[GetPersonQuery, Person | None]):
 
 
 class FakeHandler(QueryHandler):
-    def __init__(self, repository: PersonRepositoryInterface = None):
+    def __init__(self, repository: Optional[PersonRepositoryInterface] = None):
         self._repository = repository
 
     def handle(self, query: Query) -> str:

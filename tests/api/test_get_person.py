@@ -6,7 +6,6 @@ from app.application.query_handlers import GetPersonHandler
 from app.bootstrap import get_query_bus
 from app.infrastructure.repository import PersonRepository
 from app.main import app
-from tests.conftest import mocked_driver_without_data
 
 
 def test_get_person(client, mocked_driver_with_single_record):
