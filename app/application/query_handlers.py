@@ -6,7 +6,7 @@ from app.domain.person import Person
 from app.infrastructure.repository import PersonRepositoryInterface
 
 
-class GetAllPeopleHandler(QueryHandler[GetAllPeopleQuery, list[Person]]):
+class GetAllPeopleHandler(QueryHandler):
     def __init__(self, repository: PersonRepositoryInterface):
         self._repository = repository
 
@@ -14,9 +14,7 @@ class GetAllPeopleHandler(QueryHandler[GetAllPeopleQuery, list[Person]]):
         return self._repository.get_all()
 
 
-class GetPersonHandler(QueryHandler[GetPersonQuery, Person | None]):
-    """A query handler that returns a result of GetPersonQuery"""
-
+class GetPersonHandler(QueryHandler):
     def __init__(self, repository: PersonRepositoryInterface):
         self._repository = repository
 

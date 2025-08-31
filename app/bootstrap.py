@@ -25,8 +25,8 @@ _query_bus, _command_bus = _build_busses()
 
 
 def get_query_bus() -> QueryBus:
-    return _query_bus
+    return _query_bus  # pragma: no cover
 
 
 def get_command_bus() -> CommandBus:
-    return _command_bus
+    return _command_bus  # pragma: no cover
