@@ -11,30 +11,29 @@ If a type variable appears in argument position, it must be contravariant.
 """
 
 
-R = TypeVar("R", covariant=True)  # result type for queries and commands
+RQ = TypeVar("RQ", covariant=True)  # result type for queries
+RC = TypeVar("RC", covariant=True)  # result type for commands
 
 
-class Query(Protocol[R]):
+class Query(Protocol[RQ]):
     """A query that returns a result of type R."""
 
     ...
 
 
-class Command(Protocol[R]):
+class Command(Protocol[RC]):
     """A command that returns R (often None)."""
 
     ...
 
 
 Q = TypeVar("Q", bound=Query, contravariant=True)  # must be a Query[...] subclass
-
-
-class QueryHandler(Protocol[Q, R]):
-    def handle(self, query: Q) -> R: ...
-
-
 C = TypeVar("C", bound=Command, contravariant=True)  # command result type (often None)
 
 
-class CommandHandler(Protocol[C, R]):
-    def handle(self, cmd: C) -> R: ...
+class QueryHandler(Protocol[Q, RQ]):
+    def handle(self, query: Q) -> RQ: ...
+
+
+class CommandHandler(Protocol[C, RC]):
+    def handle(self, cmd: C) -> RC: ...
