@@ -4,7 +4,7 @@ from app.domain.person import Person
 from app.infrastructure.repository import PersonRepositoryInterface
 
 
-class CreatePersonHandler(CommandHandler[CreatePersonCommand, Person]):
+class CreatePersonHandler(CommandHandler):
     def __init__(self, repository: PersonRepositoryInterface):
         self._repository = repository
 
