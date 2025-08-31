@@ -42,6 +42,8 @@ class PersonRepository(PersonRepositoryInterface):
                 name=name,
             )
             record = result.single()
+            if not record:
+                raise PersonCreationError("Database did not return created person")
             person = record["p"]
             return Person(uid=person["uid"], name=person["name"])
 
@@ -49,3 +51,7 @@ class PersonRepository(PersonRepositoryInterface):
 class FakePersonRepository(PersonRepositoryInterface):
     def __new__(cls, *args, **kwargs):
         return MagicMock(spec=PersonRepositoryInterface)
+
+
+class PersonCreationError(RuntimeError):
+    """Raised when a person could not be created in the repository."""
