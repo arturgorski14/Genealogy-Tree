@@ -43,7 +43,9 @@ class PersonRepository(PersonRepositoryInterface):
             )
             record = result.single()
             if not record:
-                raise PersonCreationError("Database did not return created person")
+                raise PersonCreationError(
+                    "Database did not return created person"
+                )  # pragma: no cover
             person = record["p"]
             return Person(uid=person["uid"], name=person["name"])
 
