@@ -1,11 +1,13 @@
-from app.application.generics import Command, Query, QueryHandler
+from typing import Type
+
+from app.application.generics import Command, CommandHandler, Query, QueryHandler
 
 
 class QueryBus:
     def __init__(self):
-        self._handlers = {}
+        self._handlers: dict[Type[Query], QueryHandler] = {}
 
-    def register(self, query_type, handler: QueryHandler):
+    def register(self, query_type: Type[Query], handler: QueryHandler):
         self._handlers[query_type] = handler
 
     def dispatch(self, query: Query):
@@ -15,9 +17,9 @@ class QueryBus:
 
 class CommandBus:
     def __init__(self):
-        self._handlers = {}
+        self._handlers: dict[Type[Command], CommandHandler] = {}
 
-    def register(self, command_type, handler) -> None:
+    def register(self, command_type: Type[Command], handler: CommandHandler) -> None:
         self._handlers[command_type] = handler
 
     def dispatch(self, command: Command):
