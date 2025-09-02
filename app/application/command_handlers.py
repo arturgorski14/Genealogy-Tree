@@ -1,5 +1,7 @@
+from typing import Optional
+
 from app.application.commands import CreatePersonCommand
-from app.application.generics import CommandHandler
+from app.application.generics import Command, CommandHandler
 from app.domain.person import Person
 from app.infrastructure.repository import PersonRepositoryInterface
 
@@ -10,3 +12,11 @@ class CreatePersonHandler(CommandHandler):
 
     def handle(self, command: CreatePersonCommand) -> Person:
         return self._repository.create(name=command.name)
+
+
+class FakeCommandHandler(CommandHandler):
+    def __init__(self, repository: Optional[PersonRepositoryInterface] = None):
+        self._repository = repository
+
+    def handle(self, command: Command) -> str:
+        return "handled"

@@ -3,10 +3,11 @@ from typing import Type
 import pytest
 
 from app.application.bus import CommandBus, QueryBus
+from app.application.command_handlers import FakeCommandHandler
 from app.application.commands import CreatePersonCommand
 from app.application.exceptions import HandlerNotRegistered
 from app.application.queries import GetAllPeopleQuery, GetPersonQuery
-from app.application.query_handlers import FakeHandler
+from app.application.query_handlers import FakeQueryHandler
 
 
 @pytest.mark.parametrize(
@@ -19,7 +20,7 @@ from app.application.query_handlers import FakeHandler
 def test_query_bus_dispatches_to_handler(query: Type, query_args, query_kwargs):
     # Arrange
     bus = QueryBus()
-    bus.register(query, FakeHandler())
+    bus.register(query, FakeQueryHandler())
 
     # Act
     result = bus.dispatch(query(*query_args, **query_kwargs))
@@ -32,7 +33,7 @@ def test_command_bus_dispatches_to_handler():
     # Arrange
     command = CreatePersonCommand
     bus = CommandBus()
-    bus.register(command, FakeHandler())
+    bus.register(command, FakeCommandHandler())
 
     # Act
     result = bus.dispatch(command("name-fake"))

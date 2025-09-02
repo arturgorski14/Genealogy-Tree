@@ -22,7 +22,7 @@ class GetPersonHandler(QueryHandler):
         return self._repository.get(uid=query.uid)
 
 
-class FakeHandler(QueryHandler):
+class FakeQueryHandler(QueryHandler):
     def __init__(self, repository: Optional[PersonRepositoryInterface] = None):
         self._repository = repository
 
