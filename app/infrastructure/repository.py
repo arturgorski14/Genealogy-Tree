@@ -14,6 +14,8 @@ class PersonRepositoryInterface(Protocol):
 
     def create(self, name: str) -> Person: ...
 
+    def delete(self, uid: str) -> bool: ...
+
 
 class PersonRepository(PersonRepositoryInterface):
     def __init__(self, driver: Neo4jDriver):
