@@ -51,6 +51,17 @@ class PersonRepository(PersonRepositoryInterface):
             person = record["p"]
             return Person(uid=person["uid"], name=person["name"])
 
+    def delete(self, uid: str) -> bool:
+        with self._driver.session() as session:
+            result = session.run(
+                "MATCH (p:Person {uid: $uid}) DETACH DELETE p RETURN COUNT(p) as deleted_count",
+                uid=uid,
+            )
+            record = result.single()
+            if not record:
+                return False
+            return record["deleted_count"] > 0
+
 
 class FakePersonRepository(PersonRepositoryInterface):
     def __new__(cls, *args, **kwargs):
