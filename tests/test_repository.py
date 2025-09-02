@@ -49,3 +49,10 @@ def test_create_person_object():
     assert isinstance(created, Person)
     assert created.uid == "fake-uid"
     assert created.name == "fake"
+
+
+# TODO: tests
+"""
+- successful deletion
+- deletion of non existent person
+"""
