@@ -51,16 +51,17 @@ def test_create_person_object():
     assert created.name == "fake"
 
 
-# TODO: tests
-"""
-- successful deletion
-- deletion of non existent person
-"""
-
-
 def test_delete_existing_person_returns_true():
     single_record = {"deleted_count": 1}
     driver, _ = mock_neo4j_driver_with_session(single_record=single_record)
     repo = PersonRepository(driver=driver)
 
     assert repo.delete("1") is True
+
+
+def test_delete_nonexistent_person_returns_false(mocked_driver_without_data):
+    repo = PersonRepository(driver=mocked_driver_without_data)
+
+    result = repo.delete("does-not-exist")
+
+    assert result is False
