@@ -7,3 +7,8 @@ from app.domain.person import Person
 @dataclass
 class CreatePersonCommand(Command[Person]):
     name: str
+
+
+@dataclass
+class DeletePersonCommand(Command):
+    uid: str

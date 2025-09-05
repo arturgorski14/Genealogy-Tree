@@ -3,7 +3,7 @@ from starlette import status
 
 from app.api.request_schemas import CreatePersonRequest
 from app.application.bus import CommandBus, QueryBus
-from app.application.commands import CreatePersonCommand
+from app.application.commands import CreatePersonCommand, DeletePersonCommand
 from app.application.queries import GetAllPeopleQuery, GetPersonQuery
 from app.bootstrap import get_command_bus, get_query_bus
 
@@ -31,3 +31,10 @@ def create_person(
 ):
     result = command_bus.dispatch(CreatePersonCommand(body.name))
     return result
+
+
+@router.delete("/{uid}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_person(uid: str, bus: CommandBus = Depends(get_command_bus)):
+    success = bus.dispatch(DeletePersonCommand(uid))
+    if not success:
+        raise HTTPException(status_code=404, detail="Person not found")
