@@ -35,4 +35,6 @@ def create_person(
 
 @router.delete("/{uid}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_person(uid: str, bus: CommandBus = Depends(get_command_bus)):
-    bus.dispatch(DeletePersonCommand(uid))
+    success = bus.dispatch(DeletePersonCommand(uid))
+    if not success:
+        raise HTTPException(status_code=404, detail="Person not found")

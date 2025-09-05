@@ -25,3 +25,22 @@ def test_delete_existing_person(client):
     # Assert
     assert response.status_code == status.HTTP_204_NO_CONTENT
     assert response.content == b""  # empty body
+
+
+def test_delete_nonexistent_person(client):
+    # Arrange
+    single_record = {"deleted_count": 0}
+    driver, _ = mock_neo4j_driver_with_session(single_record=single_record)
+    repo = PersonRepository(driver=driver)
+    fake_bus = CommandBus()
+    fake_bus.register(DeletePersonCommand, DeletePersonHandler(repo))
+
+    app.dependency_overrides[get_command_bus] = lambda: fake_bus
+
+    # Act
+    response = client.delete("/people/nonexistent-uid")
+
+    # Assert
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    data = response.json()
+    assert data["detail"] == "Person not found"
