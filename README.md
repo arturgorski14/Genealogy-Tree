@@ -34,33 +34,16 @@ poetry - for managing packages
    ```
 
 ## 📁 Code Structure
-```commandline
-project_root/
-├── app/
-│   ├── __init__.py
-│   ├── config.py        # Loads environment
-│   ├── db.py            # Handles Neo4j connection
-│   ├── commands.py      # Transaction functions (e.g. add_person)
-│   └── main.py          # Entrypoint
-│
-├── tests/
-│   ├── __init__.py
-│   └── test_commands.py # Tests using pytest
-│
-├── .env
-├── .gitignore
-├── .pre-commit-config.yaml
-├── poetry.lock
-├── pyproject.toml
-└── README.md
-```
+
+TODO: diagrams about cqrs
+
 Domain → pure business logic (Person aggregate).
 Application → orchestrates actions (commands/queries/handlers).
 Infrastructure → persistence & integration (repositories, external systems)
 
 ## 🚀 Quickstart
 
-### 📦 Install Dependencies (with Poetry 2.0.1)
+### 📦 Install Dependencies (with uv 0.8.15)
 
 Make sure you have Python ≥ 3.13 installed:
 
@@ -69,18 +52,19 @@ python --version
 # Python 3.13.0
 ```
 
-Install Poetry and set up the environment:
+Set up the virtual environment and install dependencies:
 ```commandline
-python -m pip install poetry==2.0.1
-poetry env use python
-poetry install --no-root
+uv venv
+.venv\Scripts\activate  # On Windows
+# source .venv/bin/activate  # On Linux/macOS
+uv sync
 ```
 
 ### ▶️ Run the Application
 Open Neo4j Desktop and start the database
 Start backend server (from root folder)
 ```commandline
-poetry run uvicorn app.main:app --reload
+uv run uvicorn app.main:app --reload
 ```
 Start frontend server (from root folder)
 ```commandline
@@ -94,7 +78,7 @@ npm run dev
 
 #### 🧪 Run Tests
 ```commandline
-poetry run pytest
+uv run pytest
 ```
 
 ### Contributing
@@ -105,17 +89,18 @@ pre-commit run --all-files
 ```
 Generate coverage report
 ```commandline
-pytest --cov=app --cov-report=term-missing
+uv run pytest --cov=app --cov-report=term-missing
 ```
 Remove local branches (fully merged to main)
-- Linux
-```commandline
-git branch | grep -v "main" | xargs git branch -d
-```
 - Windows
 ```commandline
 git branch | Where-Object { $_ -notmatch "main" } | ForEach-Object { git branch -d $_.Trim() }
 ```
+- Linux
+```commandline
+git branch | grep -v "main" | xargs git branch -d
+```
+
 
 ### Common Errors
 #### 1.
@@ -129,5 +114,5 @@ taskkill /PID 2916 /F
 ```
 If that doesn't work use different port (ex. 8010):
 ```commandline
-poetry run uvicorn app.main:app --reload --port 8010
+uv run uvicorn app.main:app --reload --port 8010
 ```
