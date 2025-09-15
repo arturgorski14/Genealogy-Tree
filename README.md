@@ -116,3 +116,15 @@ If that doesn't work use different port (ex. 8010):
 ```commandline
 uv run uvicorn app.main:app --reload --port 8010
 ```
+
+#### 2.
+Git warns that when it checks those files out again, it will convert LF → CRLF.
+```commandline
+warning: in the working copy of 'pyproject.toml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'uv.lock', LF will be replaced by CRLF the next time Git touches it
+```
+Solution
+```commandline
+git config core.autocrlf false
+git config core.eol lf
+```
