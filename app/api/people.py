@@ -37,4 +37,6 @@ def create_person(
 def delete_person(uid: str, bus: CommandBus = Depends(get_command_bus)):
     success = bus.dispatch(DeletePersonCommand(uid))
     if not success:
-        raise HTTPException(status_code=404, detail="Person not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Person not found"
+        )

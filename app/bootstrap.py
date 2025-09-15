@@ -1,6 +1,6 @@
 from app.application.bus import CommandBus, QueryBus
-from app.application.command_handlers import CreatePersonHandler
-from app.application.commands import CreatePersonCommand
+from app.application.command_handlers import CreatePersonHandler, DeletePersonHandler
+from app.application.commands import CreatePersonCommand, DeletePersonCommand
 from app.application.queries import GetAllPeopleQuery, GetPersonQuery
 from app.application.query_handlers import GetAllPeopleHandler, GetPersonHandler
 from app.core.config import get_driver
@@ -17,6 +17,7 @@ def _build_busses() -> tuple[QueryBus, CommandBus]:
 
     command_bus = CommandBus()
     command_bus.register(CreatePersonCommand, CreatePersonHandler(person_repo))
+    command_bus.register(DeletePersonCommand, DeletePersonHandler(person_repo))
 
     return query_bus, command_bus
 
