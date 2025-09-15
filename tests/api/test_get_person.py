@@ -28,30 +28,32 @@ def test_get_person(client, mocked_driver_with_single_record):
 
 def test_get_nonexistent_person(client, mocked_driver_without_data):
     # Arrange
+    uid = "non-existent-uid"
     repo = PersonRepository(mocked_driver_without_data)
     fake_bus = QueryBus()
     fake_bus.register(GetPersonQuery, GetPersonHandler(repo))
     app.dependency_overrides[get_query_bus] = lambda: fake_bus
 
     # Act
-    response = client.get("/people/non-existent-uid")
+    response = client.get(f"/people/{uid}")
 
     # Assert
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json() == {"detail": "Person not found"}
+    assert response.json() == {"detail": f"Person {uid} not found"}
 
 
 def test_get_person_with_invalid_uid(client, mocked_driver_without_data):
     # Arrange
+    uid = "INVALID_UID"
     repo = PersonRepository(mocked_driver_without_data)
     fake_bus = QueryBus()
     fake_bus.register(GetPersonQuery, GetPersonHandler(repo))
     app.dependency_overrides[get_query_bus] = lambda: fake_bus
 
     # Act
-    response = client.get("/people/INVALID_UID")
+    response = client.get(f"/people/{uid}")
 
     # Assert
     # TODO: after parsing, return 422 for invalid UUID, for now treat invalid UID as not found
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json() == {"detail": "Person not found"}
+    assert response.json() == {"detail": f"Person {uid} not found"}

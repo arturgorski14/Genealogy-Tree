@@ -20,7 +20,7 @@ def get_person(uid: str, query_bus: QueryBus = Depends(get_query_bus)):
     result = query_bus.dispatch(GetPersonQuery(uid))
     if result is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Person not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Person {uid} not found"
         )
     return result
 
@@ -38,5 +38,5 @@ def delete_person(uid: str, bus: CommandBus = Depends(get_command_bus)):
     success = bus.dispatch(DeletePersonCommand(uid))
     if not success:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Person not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Person {uid} not found"
         )
