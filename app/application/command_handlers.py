@@ -1,6 +1,10 @@
 from typing import Optional
 
-from app.application.commands import CreatePersonCommand, DeletePersonCommand
+from app.application.commands import (
+    AddParentChildRelationCommand,
+    CreatePersonCommand,
+    DeletePersonCommand,
+)
 from app.application.generics import Command, CommandHandler
 from app.domain.person import Person
 from app.infrastructure.repository import PersonRepositoryInterface
@@ -12,6 +16,14 @@ class CreatePersonHandler(CommandHandler):
 
     def handle(self, command: CreatePersonCommand) -> Person:
         return self._repository.create(name=command.name)
+
+
+class AddParentChildRelationHandler:
+    def __init__(self, repo: PersonRepositoryInterface):
+        self.repo = repo
+
+    def handle(self, cmd: AddParentChildRelationCommand) -> None:
+        self.repo.add_parent_child(cmd.parent_id, cmd.child_id)
 
 
 class DeletePersonHandler(CommandHandler):
