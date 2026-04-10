@@ -60,6 +60,15 @@ uv venv
 uv sync
 ```
 
+### Setup the database (one time - for local)
+We need to ensure the nodes are unique otherwise MERGE could break and create multiple relationships for the same people
+```commandline
+CREATE CONSTRAINT person_uid IF NOT EXISTS
+FOR (p:Person)
+REQUIRE p.uid IS UNIQUE
+```
+This is not suitable for production - TODO: script that does something similar on db initialization
+
 ### ▶️ Run the Application
 Open Neo4j Desktop and start the database
 Start backend server (from root folder)

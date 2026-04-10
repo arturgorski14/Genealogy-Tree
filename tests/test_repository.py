@@ -1,3 +1,5 @@
+import pytest
+
 from app.domain.person import Person
 from app.infrastructure.repository import PersonRepository
 from tests.conftest import mock_neo4j_driver_with_session
@@ -65,3 +67,20 @@ def test_delete_nonexistent_person_returns_false(mocked_driver_without_data):
     result = repo.delete("does-not-exist")
 
     assert result is False
+
+
+def test_add_parent_child_creates_relationship():
+    driver, mock_session = mock_neo4j_driver_with_session()
+    repo = PersonRepository(driver=driver)
+
+    repo.add_parent_child("p1", "c1")
+
+    mock_session.run.assert_called_once()
+    cypher, params = mock_session.run.call_args[0][0], mock_session.run.call_args[1]
+    assert "PARENT" in cypher
+    assert params["parent_id"] == "p1"
+    assert params["child_id"] == "c1"
+
+
+@pytest.mark.skip(reason="Not implemented yet")
+def test_add_parent_child_dont_create_relationship_if_its_already_exist(): ...

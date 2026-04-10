@@ -1,8 +1,16 @@
 from neo4j.exceptions import ServiceUnavailable
 
 from app.application.bus import CommandBus, QueryBus
-from app.application.command_handlers import CreatePersonHandler, DeletePersonHandler
-from app.application.commands import CreatePersonCommand, DeletePersonCommand
+from app.application.command_handlers import (
+    AddParentChildRelationHandler,
+    CreatePersonHandler,
+    DeletePersonHandler,
+)
+from app.application.commands import (
+    AddParentChildRelationCommand,
+    CreatePersonCommand,
+    DeletePersonCommand,
+)
 from app.application.queries import GetAllPeopleQuery, GetPersonQuery
 from app.application.query_handlers import GetAllPeopleHandler, GetPersonHandler
 from app.core.config import get_driver
@@ -43,9 +51,15 @@ print(f"{person=}")
 
 command_bus = CommandBus()
 command_bus.register(CreatePersonCommand, CreatePersonHandler(person_repo))
+command_bus.register(
+    AddParentChildRelationCommand, AddParentChildRelationHandler(person_repo)
+)
 command_bus.register(DeletePersonCommand, DeletePersonHandler(person_repo))
 
 new_person: Person = command_bus.dispatch(CreatePersonCommand("new-person"))
 print(new_person)
+
+command_bus.dispatch(AddParentChildRelationCommand(person_uid, new_person.uid))
+
 deleted = command_bus.dispatch(DeletePersonCommand(new_person.uid))
 print(deleted)

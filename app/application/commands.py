@@ -10,5 +10,11 @@ class CreatePersonCommand(Command[Person]):
 
 
 @dataclass
+class AddParentChildRelationCommand(Command[None]):
+    parent_id: str
+    child_id: str
+
+
+@dataclass
 class DeletePersonCommand(Command):
     uid: str
