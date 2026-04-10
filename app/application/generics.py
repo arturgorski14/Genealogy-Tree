@@ -22,7 +22,7 @@ class Query(Protocol[RQ]):
 
 
 class Command(Protocol[RC]):
-    """A command that returns R (often None)."""
+    """A command that returns RC (often None)."""
 
     ...
 

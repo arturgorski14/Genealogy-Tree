@@ -22,8 +22,8 @@ class AddParentChildRelationHandler:
     def __init__(self, repo: PersonRepositoryInterface):
         self.repo = repo
 
-    def handle(self, cmd: AddParentChildRelationCommand) -> None:
-        self.repo.add_parent_child(cmd.parent_id, cmd.child_id)
+    def handle(self, cmd: AddParentChildRelationCommand) -> bool:
+        return self.repo.add_parent_child(cmd.parent_id, cmd.child_id)
 
 
 class DeletePersonHandler(CommandHandler):

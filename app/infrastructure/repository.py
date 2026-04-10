@@ -16,6 +16,10 @@ class PersonRepositoryInterface(Protocol):
 
     def add_parent_child(self, parent_id: str, child_id: str) -> bool: ...
 
+    # add sibling_relation
+    # remove_parent_child_relation
+    # remove_sibling_relation
+
     def delete(self, uid: str) -> bool: ...
 
 

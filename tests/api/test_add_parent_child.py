@@ -10,7 +10,9 @@ from tests.conftest import mock_neo4j_driver_with_session
 
 
 def test_add_parent_child_relationship(client):
-    driver, mock_session = mock_neo4j_driver_with_session()
+    body = {"parent_id": "p1", "child_id": "c1"}
+    single_record = {"created": True}
+    driver, mock_session = mock_neo4j_driver_with_session(single_record=single_record)
     repo = PersonRepository(driver=driver)
     fake_bus = CommandBus()
     fake_bus.register(
@@ -19,9 +21,7 @@ def test_add_parent_child_relationship(client):
 
     app.dependency_overrides[get_command_bus] = lambda: fake_bus
 
-    body = {"parent_id": "p1", "child_id": "c1"}
     response = client.post("/people/relationships/parent-child", json=body)
-
     assert response.status_code == status.HTTP_201_CREATED
     data = response.json()
     assert data == {"status": "relationship_created"}
