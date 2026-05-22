@@ -1,17 +1,15 @@
-import { useEffect, useState } from 'react';
-import { getAllPeople, createPerson, deletePerson } from './api/people';
-import { getAllRelationships } from './api/relationships';
-import { PersonNode, buildFamilyTree } from './person_node';
-import { createParentRelationship, deleteParentRelationship } from './api/relationships';
+import PersonList from "./components/PersonList";
+import PersonForm from "./components/PersonForm";
+import { useRef } from "react";
 
-function App() {
-    return (
-        <div>
-        <h1>Family Tree</h1>
-        <h3>New version incoming :)</h3>
-      </div>
-    )
-};
+export default function App() {
+  const listRef = useRef<any>();
 
-
-export default App;
+  return (
+    <div style={{ padding: 20 }}>
+      <h1>Family Tree - list</h1>
+      <PersonForm onCreated={() => listRef.current?.load?.()} />
+      <PersonList ref={listRef} />
+    </div>
+  );
+}
