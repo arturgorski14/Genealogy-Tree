@@ -1,15 +1,14 @@
+import { BrowserRouter, Routes, Route } from "react-router";
 import PersonList from "./components/PersonList";
-import PersonForm from "./components/PersonForm";
-import { useRef } from "react";
+import PersonDetails from "./components/PersonDetails";
 
 export default function App() {
-  const listRef = useRef<any>();
-
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Family Tree - list</h1>
-      <PersonForm onCreated={() => listRef.current?.load?.()} />
-      <PersonList ref={listRef} />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<PersonList />} />
+        <Route path="/person/:uid" element={<PersonDetails />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
